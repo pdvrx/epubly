@@ -416,6 +416,27 @@ main.has-file #uploadZone { display: none; }
   margin-bottom: .85rem;
 }
 .options-section-title::before { content: "\25AA  "; color: var(--accent); }
+.options-toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.options-chevron {
+  margin-left: auto;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--text);
+  transition: transform .2s ease;
+}
+.options-section.open .options-chevron { transform: rotate(180deg); }
+.options-collapse { display: none; }
+.options-section.open .options-collapse { display: block; }
 .options-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -981,6 +1002,7 @@ footer { position: relative; z-index: 1; }
   transition: background .12s ease;
 }
 .koreader-ip-input-wrap button:hover { background: var(--accent); border-color: var(--accent); }
+.koreader-ip-input-wrap button.copied { background: var(--green); border-color: var(--green); color: #fff; }
 
 .btn-secondary {
   display: inline-flex;
@@ -1172,6 +1194,128 @@ footer { position: relative; z-index: 1; }
   .console-body { padding: 1rem; }
   .console-bar-meta { display: none; }
 }
+
+/* === Fluxo de 3 passos (sempre visível, dá o mapa mental logo de cara) === */
+.flow-steps {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  list-style: none;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-hard);
+}
+.flow-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .8rem .9rem;
+  min-width: 0;
+}
+.flow-step-num {
+  flex-shrink: 0;
+  width: 24px; height: 24px;
+  border: 1.5px solid var(--border);
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.flow-step-text { min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
+.flow-step-text strong {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+}
+.flow-step-text span {
+  font-size: .7rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  line-height: 1.3;
+}
+.flow-step-div { width: 1.5px; background: var(--border); flex-shrink: 0; }
+@media (max-width: 640px) {
+  .flow-steps { flex-direction: column; }
+  .flow-step-div { width: auto; height: 1.5px; }
+  .flow-step-text span { white-space: normal; }
+}
+
+/* === Aviso de boas-vindas (1a visita, dispensável) === */
+.welcome-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+  background: var(--accent-soft);
+  border: 1.5px solid var(--accent);
+  padding: .85rem 1rem;
+  font-size: .8rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.welcome-tip[hidden] { display: none; }
+.welcome-tip-icon {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  color: var(--accent);
+  margin-top: .05rem;
+}
+.welcome-tip p { flex: 1; }
+.welcome-tip strong { font-weight: 700; }
+.welcome-tip-close {
+  flex-shrink: 0;
+  background: none;
+  border: 1.5px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: .1rem .3rem;
+  font-family: inherit;
+}
+.welcome-tip-close:hover { color: var(--text); border-color: var(--border); }
+
+/* === Rótulo numerado de etapa (dentro do console) === */
+.stage-label {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: -.35rem;
+}
+.stage-num {
+  flex-shrink: 0;
+  width: 19px; height: 19px;
+  border: 1.5px solid var(--border-soft);
+  color: var(--text-dim);
+  font-size: .68rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.stage-label.is-active { color: var(--text); }
+.stage-label.is-active .stage-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stage-2, .stage-3 { display: none; }
+main.has-file .stage-2, main.has-file .stage-3 { display: flex; }
+
+/* === "E agora?" no resultado === */
+.result-next {
+  margin-top: .1rem;
+  padding-top: .6rem;
+  border-top: 1px dashed var(--border-soft);
+  font-size: .76rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.result-next strong { color: var(--text); }
 </style>
 </head>
 <body>
@@ -1216,6 +1360,23 @@ footer { position: relative; z-index: 1; }
     <div class="hero-eyebrow" data-i18n="heroEyebrow">Feito para acadêmicos</div>
   </div>
 
+  <ol class="flow-steps" aria-label="Como funciona">
+    <li class="flow-step">
+      <span class="flow-step-num">1</span>
+      <span class="flow-step-text"><strong data-i18n="flowStep1t">Envie o PDF</strong><span data-i18n="flowStep1">Escaneado ou com texto</span></span>
+    </li>
+    <li class="flow-step-div" aria-hidden="true"></li>
+    <li class="flow-step">
+      <span class="flow-step-num">2</span>
+      <span class="flow-step-text"><strong data-i18n="flowStep2t">Ajuste (opcional)</strong><span data-i18n="flowStep2">Título, idioma, OCR</span></span>
+    </li>
+    <li class="flow-step-div" aria-hidden="true"></li>
+    <li class="flow-step">
+      <span class="flow-step-num">3</span>
+      <span class="flow-step-text"><strong data-i18n="flowStep3t">Baixe o EPUB</strong><span data-i18n="flowStep3">Ou envie pro e-reader</span></span>
+    </li>
+  </ol>
+
   <div class="console">
     <div class="console-bar">
       <span class="console-dot"></span>
@@ -1223,6 +1384,13 @@ footer { position: relative; z-index: 1; }
       <span class="console-bar-meta">PDF &rarr; EPUB</span>
     </div>
     <div class="console-body">
+  <div class="welcome-tip" id="welcomeTip" hidden>
+    <svg class="welcome-tip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <p><strong data-i18n="welcomeTitle">Primeira vez aqui?</strong> <span data-i18n="welcomeText">Solte um PDF abaixo pra começar. O Epubly detecta sozinho se é escaneado ou digital — as opções abaixo são só pra ajustar detalhes, não são obrigatórias.</span></p>
+    <button class="welcome-tip-close" id="welcomeTipClose" type="button" aria-label="Fechar" data-i18n-title="welcomeGotIt">&times;</button>
+  </div>
+
+  <div class="stage-label stage-1"><span class="stage-num">1</span><span data-i18n="stageUpload">Envie seu arquivo</span></div>
   <div id="uploadZone">
     <div class="upload-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg></div>
     <h3 data-i18n="dropTitle" style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;letter-spacing:-.01em;margin-bottom:0.4rem;">Arraste seu PDF aqui</h3>
@@ -1240,6 +1408,7 @@ footer { position: relative; z-index: 1; }
     <div class="estimate-item"><span class="estimate-prefix" data-i18n="estPrefix">Tempo estimado:</span><span class="estimate-label" id="estTime">—</span></div>
   </div>
 
+  <div class="stage-label stage-2"><span class="stage-num">2</span><span data-i18n="stageConfigure">Configure (opcional)</span></div>
   <div class="settings-panel card" id="settingsPanel">
     <div class="card-head">
       <div class="card-label" data-i18n="settings">Configurações</div>
@@ -1251,8 +1420,12 @@ footer { position: relative; z-index: 1; }
       <div class="setting-item"><label data-i18n="language">Idioma do texto</label><select id="bookLang"><option value="pt">Português</option><option value="en">Inglês</option><option value="es">Espanhol</option><option value="fr">Francês</option><option value="de">Alemão</option><option value="it">Italiano</option><option value="la">Latim</option></select></div>
       <div class="setting-item" id="pageRangeItem" style="display:none;"><label>Páginas <span id="pageRangeTotalLabel"></span></label><input type="text" id="pageRangeInput" class="page-range-input" placeholder="Em branco = todas. Ex: 1-10, 15"><span class="page-range-status" id="pageRangeStatus"></span></div>
     </div>
-    <div class="options-section">
-      <div class="options-section-title" data-i18n="optionsTitle">Opções de extração</div>
+    <div class="options-section" id="optionsSection">
+      <button type="button" class="options-section-title options-toggle" id="optionsToggle" aria-expanded="false" aria-controls="optionsCollapse">
+        <span data-i18n="optionsTitle">Opções de extração</span>
+        <span class="options-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="options-collapse" id="optionsCollapse">
       <div class="options-grid">
         <label class="option-card">
           <label class="toggle"><input type="checkbox" id="splitDouble" checked><span class="toggle-slider"></span></label>
@@ -1279,9 +1452,11 @@ footer { position: relative; z-index: 1; }
           </span>
         </label>
       </div>
+      </div>
     </div>
   </div>
 
+  <div class="stage-label stage-3"><span class="stage-num">3</span><span data-i18n="stageConvert">Converta</span></div>
   <button class="process-btn" id="processBtn" data-i18n="convert">Converter para EPUB</button>
 
   <div class="pages-preview" id="pagesPreview"><div class="pages-preview-header" data-i18n="pagesDetected">Páginas detectadas</div><div class="pages-grid" id="pagesGrid"></div></div>
@@ -1301,6 +1476,9 @@ footer { position: relative; z-index: 1; }
             Salvo no catálogo OPDS
           </span>
           <button id="openSettingsLink" type="button" style="background:none;border:none;padding:0;font-size:.75rem;color:var(--text-muted);cursor:pointer;font-family:inherit;text-decoration:underline;">Como acessar</button>
+        </div>
+        <div class="result-next">
+          <strong data-i18n="resultNextTitle">E agora?</strong> <span data-i18n="resultNextText">Baixe o arquivo ou envie direto pro seu e-reader sem cabo — configure uma vez e todo EPUB novo aparece sozinho na sua estante.</span>
         </div>
       </div>
     </div>
@@ -1344,11 +1522,29 @@ var I18N = {
     statUser: 'por você',
     donateTag:    'Apoie o projeto',
     donateTitle:  'Apoiar o Epubly',
-    donateIntro:  'O Epubly é gratuito e de código aberto. Como cada conversão tem um custo real, contribuições de quem pode ajudam a manter a ferramenta acessível a estudantes e pesquisadores.',
+    donateIntro:  'Mantenho o Epubly sozinho, no tempo livre. Cada PDF convertido tem um custo real de processamento — uma doação de qualquer valor é o que mantém isso gratuito pra quem não pode pagar.',
     donatePix:    'PIX (Brasil)',
     donateKofi:   'Internacional (Ko-fi)',
     donateScan:   'Escaneie com o app do seu banco',
-    donateThanks: 'Qualquer valor ajuda a manter o Epubly disponível para quem estuda e pesquisa.',
+    donateCopyDesc: 'Copie a chave PIX e cole no app do seu banco.',
+    donateCopyPix: 'Copiar chave PIX',
+    donateCopied: 'Chave copiada!',
+    donateKofiSub: 'ko-fi.com/epubly &nbsp;·&nbsp; PayPal ou cartão internacional',
+    donateThanks: 'R$ 5 já ajuda mais do que parece. Obrigado por passar por aqui.',
+    sendTag:      'Ler sem cabo',
+    sendTitle:    'Receba os EPUBs direto no seu e-reader',
+    sendIntro:    'Configure uma vez o catálogo OPDS no KOReader e cada PDF que você converter aqui aparece sozinho na sua estante — sem cabo USB, sem mandar e-mail pra si mesmo.',
+    sendOpdsName: 'Catálogo Epubly OPDS',
+    sendOpdsBadge: 'recomendado',
+    sendOpdsDesc: 'Funciona como uma prateleira que se atualiza sozinha: cada conversão fica disponível por 24h. Um código pessoal garante que só você veja os seus livros no catálogo.',
+    sendStep1:    'No KOReader: <strong>Busca de livros → Catálogos OPDS → +</strong>',
+    sendStep2:    'Dê o nome <code>Epubly</code>',
+    sendStep3:    'Cole a URL pessoal abaixo em Endereço',
+    sendStep4:    'Pronto — depois de cada conversão, o livro aparece sozinho na estante',
+    sendUrlLabel: 'Sua URL pessoal (copie para o KOReader)',
+    sendCopy:     'Copiar',
+    sendPrivacy:  'O código fica só no seu navegador — ele identifica seus livros no catálogo, não você.',
+    copiedShort:  'Copiado',
     estPrefix:    'Tempo estimado:',
     heroEyebrow:  'O conversor que você precisava',
     heroTitle:    'Leia scans e artigos acadêmicos no seu e-reader',
@@ -1408,6 +1604,20 @@ var I18N = {
     aboutS4t:     'Por que as doações são fundamentais',
     aboutS4:      'Cada conversão tem um custo real de servidores e APIs. Queremos que o Epubly continue gratuito e acessível a estudantes e pesquisadores que não poderiam pagar por ele. As doações de quem pode contribuir são o que tornam isso possível.',
     aboutDonate:  'Apoiar com uma doação',
+    flowStep1t:   'Envie o PDF',
+    flowStep1:    'Escaneado ou com texto',
+    flowStep2t:   'Ajuste (opcional)',
+    flowStep2:    'Título, idioma, OCR',
+    flowStep3t:   'Baixe o EPUB',
+    flowStep3:    'Ou envie pro e-reader',
+    welcomeTitle: 'Primeira vez aqui?',
+    welcomeText:  'Solte um PDF abaixo pra começar. O Epubly detecta sozinho se é escaneado ou digital — as opções abaixo são só pra ajustar detalhes, não são obrigatórias.',
+    welcomeGotIt: 'Entendi',
+    stageUpload:  'Envie seu arquivo',
+    stageConfigure: 'Configure (opcional)',
+    stageConvert: 'Converta',
+    resultNextTitle: 'E agora?',
+    resultNextText: 'Baixe o arquivo ou envie direto pro seu e-reader sem cabo — configure uma vez e todo EPUB novo aparece sozinho na sua estante.',
   },
   en: {
     changeKey:    'Change key',
@@ -1416,11 +1626,29 @@ var I18N = {
     statUser: 'by you',
     donateTag:    'Support the project',
     donateTitle:  'Support Epubly',
-    donateIntro:  'Epubly is free and open source. Since every conversion has a real cost, contributions from those who can help keep the tool accessible to students and researchers.',
+    donateIntro:  'I maintain Epubly on my own, in my spare time. Every PDF converted has a real processing cost — a donation of any size is what keeps this free for people who cannot pay.',
     donatePix:    'PIX (Brazil)',
     donateKofi:   'International (Ko-fi)',
     donateScan:   'Scan with your bank app',
-    donateThanks: 'Contributions help keep Epubly available for students and researchers.',
+    donateCopyDesc: 'Copy the PIX key and paste it in your bank app.',
+    donateCopyPix: 'Copy PIX key',
+    donateCopied: 'Key copied!',
+    donateKofiSub: 'ko-fi.com/epubly &nbsp;·&nbsp; PayPal or international card',
+    donateThanks: '$5 already helps more than you would think. Thanks for stopping by.',
+    sendTag:      'Read without a cable',
+    sendTitle:    'Get your EPUBs straight to your e-reader',
+    sendIntro:    'Set up the OPDS catalog once in KOReader and every PDF you convert here shows up on your shelf by itself — no USB cable, no emailing files to yourself.',
+    sendOpdsName: 'Epubly OPDS catalog',
+    sendOpdsBadge: 'recommended',
+    sendOpdsDesc: 'Works like a shelf that updates itself: each conversion stays available for 24h. A personal code makes sure only you see your books in the catalog.',
+    sendStep1:    'In KOReader: <strong>Search books → OPDS catalogs → +</strong>',
+    sendStep2:    'Name it <code>Epubly</code>',
+    sendStep3:    'Paste your personal URL below as the address',
+    sendStep4:    'Done — after every conversion, the book shows up on the shelf by itself',
+    sendUrlLabel: 'Your personal URL (copy into KOReader)',
+    sendCopy:     'Copy',
+    sendPrivacy:  'The code lives only in your browser — it identifies your books in the catalog, not you.',
+    copiedShort:  'Copied',
     estPrefix:    'Estimated time:',
     heroEyebrow:  'The converter you needed',
     heroTitle:    'Read scans and academic papers on your e-reader',
@@ -1480,6 +1708,20 @@ var I18N = {
     aboutS4t:     'Why donations are essential',
     aboutS4:      'Every conversion has a real server and API cost. We want Epubly to stay free and accessible to students and researchers who could not otherwise afford it. Donations from those who can contribute are what keep it running.',
     aboutDonate:  'Support with a donation',
+    flowStep1t:   'Upload the PDF',
+    flowStep1:    'Scanned or with text',
+    flowStep2t:   'Adjust (optional)',
+    flowStep2:    'Title, language, OCR',
+    flowStep3t:   'Download the EPUB',
+    flowStep3:    'Or send to your e-reader',
+    welcomeTitle: 'First time here?',
+    welcomeText:  'Drop a PDF below to start. Epubly detects on its own whether it is scanned or digital — the options below are just for fine-tuning, not required.',
+    welcomeGotIt: 'Got it',
+    stageUpload:  'Upload your file',
+    stageConfigure: 'Configure (optional)',
+    stageConvert: 'Convert',
+    resultNextTitle: 'What now?',
+    resultNextText: 'Download the file or send it straight to your e-reader with no cable — set it up once and every new EPUB shows up on its own.',
   },
   es: {
     changeKey:    'Cambiar clave',
@@ -1488,11 +1730,29 @@ var I18N = {
     statUser: 'por ti',
     donateTag:    'Apoya el proyecto',
     donateTitle:  'Apoyar Epubly',
-    donateIntro:  'Epubly es gratuito y de código abierto. Como cada conversión tiene un coste real, las contribuciones de quienes pueden ayudan a mantener la herramienta accesible para estudiantes e investigadores.',
+    donateIntro:  'Mantengo Epubly solo, en mi tiempo libre. Cada PDF convertido tiene un coste real de procesamiento — una donación de cualquier valor es lo que mantiene esto gratis para quien no puede pagarlo.',
     donatePix:    'PIX (Brasil)',
     donateKofi:   'Internacional (Ko-fi)',
     donateScan:   'Escanea con la app de tu banco',
-    donateThanks: 'Las contribuciones ayudan a mantener Epubly disponible para quienes estudian e investigan.',
+    donateCopyDesc: 'Copia la clave PIX y pégala en la app de tu banco.',
+    donateCopyPix: 'Copiar clave PIX',
+    donateCopied: '¡Clave copiada!',
+    donateKofiSub: 'ko-fi.com/epubly &nbsp;·&nbsp; PayPal o tarjeta internacional',
+    donateThanks: '5€ ya ayuda más de lo que parece. Gracias por pasarte por aquí.',
+    sendTag:      'Lee sin cable',
+    sendTitle:    'Recibe tus EPUBs directo en tu e-reader',
+    sendIntro:    'Configura una vez el catálogo OPDS en KOReader y cada PDF que conviertas aquí aparece solo en tu estante — sin cable USB, sin mandarte el archivo por correo.',
+    sendOpdsName: 'Catálogo Epubly OPDS',
+    sendOpdsBadge: 'recomendado',
+    sendOpdsDesc: 'Funciona como un estante que se actualiza solo: cada conversión queda disponible por 24h. Un código personal garantiza que solo tú veas tus libros en el catálogo.',
+    sendStep1:    'En KOReader: <strong>Buscar libros → Catálogos OPDS → +</strong>',
+    sendStep2:    'Ponle el nombre <code>Epubly</code>',
+    sendStep3:    'Pega tu URL personal abajo en Dirección',
+    sendStep4:    'Listo — después de cada conversión, el libro aparece solo en el estante',
+    sendUrlLabel: 'Tu URL personal (cópiala en KOReader)',
+    sendCopy:     'Copiar',
+    sendPrivacy:  'El código vive solo en tu navegador — identifica tus libros en el catálogo, no a ti.',
+    copiedShort:  'Copiado',
     estPrefix:    'Tiempo estimado:',
     heroEyebrow:  'El conversor que necesitabas',
     heroTitle:    'Lee scans y artículos académicos en tu e-reader',
@@ -1552,6 +1812,20 @@ var I18N = {
     aboutS4t:     'Por qué las donaciones son fundamentales',
     aboutS4:      'Cada conversión tiene un coste real de servidores y APIs. Queremos que Epubly siga siendo gratuito y accesible para estudiantes e investigadores que no podrían pagarlo. Las donaciones de quienes pueden contribuir son lo que lo mantienen en marcha.',
     aboutDonate:  'Apoyar con una donación',
+    flowStep1t:   'Sube el PDF',
+    flowStep1:    'Escaneado o con texto',
+    flowStep2t:   'Ajusta (opcional)',
+    flowStep2:    'Título, idioma, OCR',
+    flowStep3t:   'Descarga el EPUB',
+    flowStep3:    'O envíalo a tu e-reader',
+    welcomeTitle: '¿Primera vez aquí?',
+    welcomeText:  'Suelta un PDF abajo para empezar. Epubly detecta solo si es escaneado o digital — las opciones de abajo son solo para ajustar detalles, no son obligatorias.',
+    welcomeGotIt: 'Entendido',
+    stageUpload:  'Sube tu archivo',
+    stageConfigure: 'Configura (opcional)',
+    stageConvert: 'Convierte',
+    resultNextTitle: '¿Y ahora?',
+    resultNextText: 'Descarga el archivo o envíalo directo a tu e-reader sin cable — configúralo una vez y cada EPUB nuevo aparece solo en tu estante.',
   }
 };
 
@@ -1564,6 +1838,10 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
     if (T[key] !== undefined) el.innerHTML = T[key];
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-title');
+    if (T[key] !== undefined) el.title = T[key];
   });
   document.querySelectorAll('.lang-pill').forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-lang') === siteLang);
@@ -1613,6 +1891,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   var changeBtn = document.getElementById('changeFileBtn');
   if (changeBtn) changeBtn.addEventListener('click', function() { $('fileInput').click(); });
+  var optToggle = document.getElementById('optionsToggle');
+  var optSection = document.getElementById('optionsSection');
+  if (optToggle && optSection) {
+    optToggle.addEventListener('click', function() {
+      var open = optSection.classList.toggle('open');
+      optToggle.setAttribute('aria-expanded', String(open));
+    });
+  }
 });
 
 // API key — managed by Cloudflare Worker proxy (not needed client-side)
@@ -1659,7 +1945,7 @@ async function uploadEpubToOpds(blob, title, author, pages) {
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
 
-// ── File input ──────────���─────────────────────────────────────────────────────
+// ── File input ──────���───���─────────────────────────────────────────────────────
 $('fileInput').addEventListener('change', function () {
   if ($('fileInput').files[0]) handleFile($('fileInput').files[0]);
 });
@@ -1914,6 +2200,19 @@ async function parseAIResponse(res) {
     data.choices[0].message && data.choices[0].message.content) || '';
 }
 
+// Variante que também expõe finish_reason — usada no OCR pra detectar
+// resposta CORTADA por limite de tokens (ver geminiOCRBatch). A API OpenAI-
+// like retorna finish_reason:"length" quando o modelo foi truncado no meio
+// da geração, em vez de terminar naturalmente ("stop").
+async function parseAIResponseFull(res) {
+  var data = await res.json();
+  var choice = data.choices && data.choices[0];
+  return {
+    content: (choice && choice.message && choice.message.content) || '',
+    finishReason: (choice && choice.finish_reason) || null,
+  };
+}
+
 // ── Process ───────────────────────────────────────────────────────────────────
 $('processBtn').addEventListener('click', async function () {
   $('progressLabel').textContent = T.converting;
@@ -2100,16 +2399,12 @@ $('processBtn').addEventListener('click', async function () {
     setProgress(86, 'Limpando e normalizando texto…');
     results = removeInlinePageNumbers(results);
     results = fixStickyWords(results);
-    if (usedOcr) {
-      if (cleanText) {
-        results = results.map(function(p) {
-          return Object.assign({}, p, { text: fixHyphensStr(p.text || '') });
-        });
-      }
-      results = fixOcrWordBoundaries(results);
-    } else {
-      results = repairSplitWordFragments(results);
-    }
+    // NOTA: a limpeza de hifenização e a checagem de qualidade de espaçamento
+    // (com reprocesso da página em modelo maior quando suspeita) já acontecem
+    // POR PÁGINA dentro de geminiOCRBatch — não se tenta mais adivinhar por
+    // regex, depois do fato, onde faltou/sobrou espaço no texto do OCR.
+    // O caminho digital já tem espaçamento correto via posições de glifo
+    // (rebuildLineFromGlyphs), então também não precisa dessa correção.
     results = normalizeTextSpacing(results);
     results = removeRepeatedHeadersFooters(results);
     results = stripInteriorRunningHeaders(results);
@@ -2241,7 +2536,7 @@ async function sleepWithCountdown(sec) {
   }
 }
 
-// ── Extract pages ─────────────��───────────────────────────────────────────────
+// ── Extract pages ─────────────��────────────────────────────────────���──────────
 async function extractPages(doc, splitDouble, selectedPages, onProgress) {
   var pages = [];
   var total = doc.numPages;
@@ -2252,7 +2547,13 @@ async function extractPages(doc, splitDouble, selectedPages, onProgress) {
     rendered++;
     onProgress(rendered, selectedTotal);
     var page = await doc.getPage(i);
-    var vp = page.getViewport({ scale: 1.5 });
+    // scale 1.5 -> 1.8: resolução um pouco maior pra reduzir erro de leitura
+    // em texto pequeno (nota de rodapé, digitalização de livro antigo) —
+    // em baixa resolução, pares de caracteres como "rn"/"m" ou "cl"/"d"
+    // ficam ambíguos pro modelo de visão, causando palavra errada mesmo
+    // quando o resto da página sai bem. Custo extra é modesto (imagem um
+    // pouco maior), pago só nas páginas que realmente precisam de OCR.
+    var vp = page.getViewport({ scale: 1.8 });
     var c = document.createElement('canvas');
     c.width = vp.width; c.height = vp.height;
     await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
@@ -2498,7 +2799,133 @@ function needsSpaceBetweenPdfItems(prev, item, lineSoFar) {
   return false;
 }
 
-function groupIntoLines(items, vp) {
+// ── Recuperação de espaços via posições de glifo (getOperatorList) ────────────
+// CAUSA-RAIZ: em linhas justificadas comprimidas, o espaço entre palavras é
+// codificado por um ajuste posicional pequeno (~0.12em) SEM glifo de espaço. O
+// pdf.js funde esses pedaços num único item de texto sem espaço ("palavrasjuntas").
+// As posições por glifo (como o Poppler/pdfminer usam) recuperam as fronteiras.
+// buildGlyphLines reconstrói a posição X de cada glifo a partir da lista de
+// operadores de texto, de forma geral (qualquer PDF digital).
+async function buildGlyphLines(page) {
+  try {
+    var OPS = (typeof pdfjsLib !== 'undefined' && pdfjsLib.OPS) ? pdfjsLib.OPS : null;
+    if (!OPS) return null;
+    var ol = await page.getOperatorList();
+    var fn = ol.fnArray, ar = ol.argsArray;
+    var glyphs = [];
+    var fontSize = 10, hScale = 1, charSp = 0, wordSp = 0, leading = 0;
+    var tm = [1,0,0,1,0,0], tlm = [1,0,0,1,0,0];
+    // a × b (matrizes afim 2x3): aplica 'a' no espaço de 'b'
+    function mul(a, b) {
+      return [
+        a[0]*b[0]+a[1]*b[2], a[0]*b[1]+a[1]*b[3],
+        a[2]*b[0]+a[3]*b[2], a[2]*b[1]+a[3]*b[3],
+        a[4]*b[0]+a[5]*b[2]+b[4], a[4]*b[1]+a[5]*b[3]+b[5]
+      ];
+    }
+    function show(glyphArr) {
+      if (!Array.isArray(glyphArr)) return;
+      var rotated = (Math.abs(tm[1]) > 0.01 || Math.abs(tm[2]) > 0.01);
+      for (var gi = 0; gi < glyphArr.length; gi++) {
+        var g = glyphArr[gi];
+        if (typeof g === 'number') {
+          var adj = -g / 1000 * fontSize * hScale;
+          tm = mul([1,0,0,1,adj,0], tm);
+          continue;
+        }
+        if (!g) continue;
+        var w0 = (g.width || 0) / 1000;
+        var isSpace = (g.unicode === ' ' || g.isSpace);
+        // As posições X (tm[4]) estão em espaço-DISPOSITIVO; o avanço é calculado em
+        // espaço-TEXTO e convertido pela escala da matriz (tm[0]). Muitos PDFs usam
+        // Tf=1 e põem a escala na matriz de texto — sem isto, vis≈0 e o gap explode.
+        var scaleX = Math.abs(tm[0]) || 1;
+        var advText = (w0 * fontSize + charSp + (isSpace ? wordSp : 0)) * hScale;
+        var visDev = w0 * fontSize * hScale * scaleX;  // largura visível em dispositivo
+        var effFs = fontSize * scaleX;                  // tamanho efetivo (Tf × escala)
+        var ch = g.unicode;
+        if (ch && ch !== ' ' && !rotated) {
+          glyphs.push({ x0: tm[4], x1: tm[4] + visDev, y: tm[5], fs: effFs, ch: ch });
+        }
+        tm = mul([1,0,0,1,advText,0], tm);
+      }
+    }
+    for (var i = 0; i < fn.length; i++) {
+      var op = fn[i], a = ar[i] || [];
+      if (op === OPS.setFont) { fontSize = Math.abs(a[1]) || 10; }
+      else if (op === OPS.setTextMatrix) { tm = [a[0],a[1],a[2],a[3],a[4],a[5]]; tlm = tm.slice(); }
+      else if (op === OPS.setCharSpacing) { charSp = a[0] || 0; }
+      else if (op === OPS.setWordSpacing) { wordSp = a[0] || 0; }
+      else if (op === OPS.setHScale) { hScale = (a[0] || 100) / 100; }
+      else if (op === OPS.setLeading) { leading = a[0] || 0; }
+      else if (op === OPS.setLeadingMoveText) { leading = -(a[1] || 0); tlm = mul([1,0,0,1,a[0]||0,a[1]||0], tlm); tm = tlm.slice(); }
+      else if (op === OPS.moveText) { tlm = mul([1,0,0,1,a[0]||0,a[1]||0], tlm); tm = tlm.slice(); }
+      else if (op === OPS.nextLine) { tlm = mul([1,0,0,1,0,-leading], tlm); tm = tlm.slice(); }
+      else if (op === OPS.beginText) { tm = [1,0,0,1,0,0]; tlm = [1,0,0,1,0,0]; }
+      else if (op === OPS.showText) { show(a[0]); }
+      else if (op === OPS.nextLineShowText) { tlm = mul([1,0,0,1,0,-leading], tlm); tm = tlm.slice(); show(a[0]); }
+      else if (op === OPS.nextLineSetSpacingShowText) { wordSp = a[0] || 0; charSp = a[1] || 0; tlm = mul([1,0,0,1,0,-leading], tlm); tm = tlm.slice(); show(a[2]); }
+    }
+    return glyphs.length >= 8 ? glyphs : null;
+  } catch (e) { return null; }
+}
+
+function _looksGlued(text) {
+  if (!text) return false;
+  var toks = text.split(/\s+/);
+  for (var i = 0; i < toks.length; i++) {
+    var tk = toks[i];
+    if (/^https?:|@|^www\.|\//i.test(tk)) continue;
+    if (tk.replace(/[^A-Za-z\u00C0-\u00FF]/g, '').length >= 18) return true; // palavra longa demais
+    if (/[a-z\u00E0-\u00FF][A-Z\u00C0-\u00DE]/.test(tk)) return true;          // colagem camelCase
+    if (/[a-z\u00E0-\u00FF][,;:][A-Za-z\u00C0-\u00FF]/.test(tk)) return true;   // colagem após pontuação
+  }
+  return false;
+}
+
+// Reconstrói o texto de uma linha (no Y dado) a partir das posições de glifo.
+// SALVAGUARDAS: só aceita quando os caracteres reconstruídos batem exatamente com
+// o texto original (apenas o espaçamento muda) e o resultado é bem-formado.
+// Em qualquer dúvida, retorna null e o texto original é mantido (sem regressão).
+function rebuildLineFromGlyphs(y, glyphs, origText) {
+  // Aplica a TODAS as linhas (não só às marcadas por _looksGlued): as posições de
+  // glifo são a fonte de verdade do espaçamento. As salvaguardas (1)(2)(3) abaixo
+  // garantem que só ADICIONAMOS espaços quando os caracteres batem exatamente com
+  // o original — nunca removem espaços nem alteram texto. Isso captura também as
+  // colagens CURTAS (ex.: "deuma", "aoredor") que o gate antigo deixava passar.
+  if (!glyphs) return null;
+  var sel = [];
+  for (var i = 0; i < glyphs.length; i++) {
+    if (Math.abs(glyphs[i].y - y) <= 2) sel.push(glyphs[i]);
+  }
+  if (sel.length < 4) return null;
+  sel.sort(function(a, b) { return a.x0 - b.x0; });
+  var out = sel[0].ch;
+  for (var j = 1; j < sel.length; j++) {
+    var gap = sel[j].x0 - sel[j-1].x1;
+    var fs = sel[j].fs || sel[j-1].fs || 10;
+    if (gap > fs * 0.08) out += ' ';
+    out += sel[j].ch;
+  }
+  out = out.replace(/\s+/g, ' ').trim();
+  // (1) fidelidade: mesmos caracteres não-espaço do original (só muda espaçamento)
+  var a2 = out.replace(/\s/g, ''), b2 = origText.replace(/\s/g, '');
+  if (a2 !== b2) return null;
+  // (2) tem que melhorar o espaçamento
+  var outToks = out.split(' ');
+  var origSpaces = (origText.match(/\s/g) || []).length;
+  if ((outToks.length - 1) <= origSpaces) return null;
+  // (3) resultado bem-formado: sem token ainda colado e sem sobre-segmentação
+  var single = 0;
+  for (var t2 = 0; t2 < outToks.length; t2++) {
+    if (outToks[t2].replace(/[^A-Za-z\u00C0-\u00FF]/g, '').length >= 24) return null;
+    if (outToks[t2].length === 1) single++;
+  }
+  if (single > outToks.length * 0.35) return null;
+  return out;
+}
+
+function groupIntoLines(items, vp, glyphLines, gutterX) {
   var W = vp.width, lineMap = {};
   items.forEach(function(item){
     if (!item.str || !item.str.trim()) return;
@@ -2507,34 +2934,190 @@ function groupIntoLines(items, vp) {
     lineMap[y].push(item);
   });
   var sortedYs = Object.keys(lineMap).map(Number).sort(function(a,b){ return b-a; });
-  return sortedYs.map(function(y){
+  var out = [];
+  sortedYs.forEach(function(y){
     var its = lineMap[y].sort(function(a,b){ return a.transform[4]-b.transform[4]; });
+    // Em página de 2 colunas, às vezes uma linha da coluna esquerda e outra da
+    // direita caem no MESMO Y arredondado (ex.: um título curto à esquerda
+    // alinhado com o início do texto à direita). Sem essa checagem elas
+    // seriam fundidas numa linha só, misturando conteúdo de colunas
+    // diferentes. Separa em sub-linhas quando: (a) foi informado o X real do
+    // gutter (gutterX, medido previamente pela moda da largura das colunas) e
+    // o item cruza esse ponto — funciona mesmo quando o vão real entre
+    // colunas é estreito (visto em PDF real: só ~20pt); ou (b), na ausência
+    // de gutterX, quando o vão é muito maior que um espaço de palavra normal.
+    var runs = [[its[0]]];
+    for (var ri = 1; ri < its.length; ri++) {
+      var rprev = its[ri-1], rcur = its[ri];
+      var rgap = rcur.transform[4] - (rprev.transform[4] + (rprev.width||0));
+      var rfs = Math.abs(rcur.transform[0]) || 10;
+      // Cruzar o X do gutter só é fronteira de coluna de verdade se também
+      // houver um vão físico ali (o espaço vazio da rua entre colunas).
+      // Sem essa exigência, um parágrafo de LARGURA TOTAL (ex.: Resumo/
+      // Abstract, que atravessa a posição do gutter sem ser 2 colunas) seria
+      // cortado ao meio só por cruzar esse X — confirmado com PDF real.
+      var crossesGutter = (gutterX != null) && (rprev.transform[4] < gutterX) && (rcur.transform[4] >= gutterX) && (rgap > rfs * 1.5);
+      var bigGap = rgap > Math.max(40, rfs * 6);
+      if (crossesGutter || bigGap) runs.push([]);
+      runs[runs.length-1].push(rcur);
+    }
+    runs.forEach(function(its){
     var text = '';
     its.forEach(function(it,i){
       if (i===0){ text=it.str; return; }
       var prev=its[i-1];
       text+=(needsSpaceBetweenPdfItems(prev, it, text)?' ':'')+it.str;
     });
+    // Correção de palavras coladas: pdf.js funde espaços comprimidos da justificação
+    // num único item sem espaço; reconstrói a partir das posições de glifo quando houver.
+    if (glyphLines) {
+      var _rb = rebuildLineFromGlyphs(y, glyphLines, text.trim());
+      if (_rb) text = _rb;
+    }
     var xMin=its[0].transform[4];
     var last=its[its.length-1];
     var xMax=last.transform[4]+(last.width||0);
     var xCenter=(xMin+xMax)/2;
     var fs=Math.abs(its[0].transform[0])||10;
     var font=its[0].fontName||'';
-    return {
-      y:y, items:its, text:text.trim(), fontSize:fs,
+    var lineObj = {
+      // .normalize('NFC'): PDFs às vezes codificam acentos em forma decomposta
+      // (ex.: "e" + acento combinante, em vez de "é" de um caractere só). Sem
+      // isso, comparações com strings literais do código (ex.: a lista de
+      // nomes de seção conhecidos — "referências", "introdução"...) falham
+      // silenciosamente mesmo os dois textos parecendo idênticos na tela.
+      // Confirmado com PDF real: "referências" extraído não batia com o
+      // literal 'referências' no código por causa disso.
+      y:y, items:its, text:text.trim().normalize('NFC'), fontSize:fs,
       xMin:xMin, xMax:xMax, xCenter:xCenter, pageWidth:W,
       isCentered:Math.abs(xCenter-W/2)<W*0.15,
       isBold:/Bold/i.test(font), isItalic:/Italic|Oblique/i.test(font)
     };
-  }).filter(function(l){ return l.text; });
+    if (lineObj.text) out.push(lineObj);
+    });
+  });
+  return out;
 }
 
-function classifyBlocks(items, vp) {
-  var lines = groupIntoLines(items, vp);
+// Estima a posição X real do gutter (vão entre colunas) a partir de linhas já
+// classificadas em esquerda/direita, usando a MODA (valor mais comum,
+// arredondado a cada 5pt) do fim das linhas da esquerda e do início das
+// linhas da direita — muito mais robusto que média/percentil porque não é
+// puxado por uma minoria de linhas ainda contaminadas por fusão residual.
+// Calcula fonte/margem dominante da PÁGINA INTEIRA (antes do split de coluna)
+// — usado como estatística compartilhada por classifyBlocksFromLines, pra
+// não sofrer com amostra pequena/tendenciosa quando UMA coluna sozinha tem
+// muita citação ou nota (ver comentário em classifyBlocksFromLines).
+function computePageBodyStats(lines, W) {
+  var _fsHist = {};
+  lines.forEach(function(l) { var k = Math.round(l.fontSize * 2) / 2; _fsHist[k] = (_fsHist[k] || 0) + 1; });
+  var bodyFs = 10, _fsBest = 0;
+  Object.keys(_fsHist).forEach(function(k) { if (_fsHist[k] > _fsBest) { _fsBest = _fsHist[k]; bodyFs = parseFloat(k); } });
+  return { bodyFs: bodyFs };
+}
+
+function estimateGutterX(leftLines, rightLines) {
+  function mode(arr, bin) {
+    if (!arr.length) return null;
+    var bins = {};
+    arr.forEach(function(v){ var b = Math.round(v/bin)*bin; bins[b] = (bins[b]||0)+1; });
+    var best = null, bestCount = -1;
+    Object.keys(bins).forEach(function(b){ if (bins[b] > bestCount) { bestCount = bins[b]; best = Number(b); } });
+    return best;
+  }
+  var leftMode = mode(leftLines.map(function(l){ return l.xMax; }), 5);
+  var rightMode = mode(rightLines.map(function(l){ return l.xMin; }), 5);
+  if (leftMode == null || rightMode == null || rightMode <= leftMode) return null;
+  // Enviesado para perto da margem esquerda (leftMode é uma medida mais
+  // confiável e estável que rightMode, que às vezes é puxado por linhas de
+  // início de parágrafo com recuo diferente). Um gutterX muito perto do meio
+  // pode acabar do lado ERRADO do vão real por poucos pontos — confirmado
+  // com PDF real (gutter estimado 3pt acima do início real da coluna
+  // direita foi o suficiente pra não cortar nada). Ficar mais perto da
+  // esquerda é mais seguro: erra para "não corta" (mantém fundido, como já
+  // era) em vez de cortar uma linha de largura total no lugar errado.
+  return leftMode + (rightMode - leftMode) * 0.25;
+}
+
+// ── splitLinesByColumn ───────────────────────────────────────────────────────
+// Separa as linhas de uma página de 2 colunas em esquerda/direita usando
+// cluster (k-means 1D) do início (xMin) de cada LINHA — não do X de cada
+// ITEM individual. Isso substitui o algoritmo antigo, que buscava "o maior
+// vão entre os X de início de todos os itens da página" — em página densa,
+// esse vão às vezes calha de cair num ponto que não é a real fronteira entre
+// colunas (posições X de palavras no MEIO de uma linha geram ruído), levando
+// quase todo o conteúdo pro mesmo lado e produzindo texto intercalado
+// (uma linha da esquerda, uma da direita, alternando) quando as duas listas
+// resultantes eram juntadas. Cluster sobre início de LINHA é muito mais
+// estável, pois praticamente todas as linhas começam bem perto da margem
+// esquerda de uma das duas colunas.
+function splitLinesByColumn(lines) {
+  if (lines.length < 8) return { left: lines, right: [] };
+  var xs = lines.map(function(l){ return l.xMin; });
+  var c1 = Math.min.apply(null, xs), c2 = Math.max.apply(null, xs);
+  for (var it = 0; it < 20; it++) {
+    var g1 = [], g2 = [];
+    lines.forEach(function(l) {
+      (Math.abs(l.xMin - c1) <= Math.abs(l.xMin - c2) ? g1 : g2).push(l);
+    });
+    if (g1.length) c1 = g1.reduce(function(a,l){ return a+l.xMin; }, 0) / g1.length;
+    if (g2.length) c2 = g2.reduce(function(a,l){ return a+l.xMin; }, 0) / g2.length;
+  }
+  var leftC = Math.min(c1, c2), rightC = Math.max(c1, c2);
+  if (rightC - leftC < 40) return { left: lines, right: [] }; // não é realmente 2 colunas
+  var left = [], right = [];
+  lines.forEach(function(l) {
+    (Math.abs(l.xMin - leftC) <= Math.abs(l.xMin - rightC) ? left : right).push(l);
+  });
+  return { left: left, right: right };
+}
+
+// Agrupa uma lista de linhas (já no formato de groupIntoLines) em parágrafos —
+// mesma regra de sempre (vão vertical mediano da página), reaproveitada tanto
+// pelo caminho de 1 coluna quanto pelo de 2 colunas.
+function linesToParagraphs(lines) {
+  if (!lines.length) return '';
+  var gaps = [];
+  for (var i = 1; i < lines.length; i++) gaps.push(lines[i-1].y - lines[i].y);
+  gaps.sort(function(a,b){ return a-b; });
+  var medGap = gaps.length ? gaps[Math.floor(gaps.length/2)] : 12;
+  var thr = medGap * 1.8;
+  var paras = [], cur = [], prevY = null;
+  lines.forEach(function(l) {
+    var lt = l.text;
+    if (l.isBold && l.isItalic) lt = '***' + lt + '***';
+    else if (l.isBold)          lt = '**' + lt + '**';
+    else if (l.isItalic)        lt = '*' + lt + '*';
+    if (prevY !== null && (prevY - l.y) > thr) {
+      if (cur.length) { paras.push(cur.join(' ')); cur = []; }
+    }
+    cur.push(lt);
+    prevY = l.y;
+  });
+  if (cur.length) paras.push(cur.join(' '));
+  return paras.join('\n\n').trim();
+}
+
+function classifyBlocks(items, vp, glyphLines, allowTitle, runHeader, isFirstPage, inReferencesStart) {
+  var lines = groupIntoLines(items, vp, glyphLines);
+  return classifyBlocksFromLines(lines, vp, allowTitle, runHeader, isFirstPage, inReferencesStart);
+}
+
+// classifyBlocksFromLines: mesma lógica de sempre, mas recebe linhas JÁ
+// PRONTAS (formato de groupIntoLines) em vez de items crus do pdf.js. Isso
+// permite rodar a mesma classificação (título/seção/resumo/nota/citação)
+// separadamente em cada coluna de uma página de 2 colunas — cada chamada
+// recebe uma lista de linhas contígua de UMA coluna só, então toda a lógica
+// interna que assume fluxo vertical contínuo (gaps, dropcap, tabela) continua
+// válida, sem risco de misturar posições Y de colunas diferentes.
+function classifyBlocksFromLines(lines, vp, allowTitle, runHeader, isFirstPage, inReferencesStart, sharedStats) {
+  if (allowTitle === undefined) allowTitle = true;
+  if (isFirstPage === undefined) isFirstPage = allowTitle; // compatibilidade: chamadas antigas usavam allowTitle como proxy de "é a 1a página"
   if (!lines.length) return [];
+  lines = lines.slice(); // não mutar a lista original (pode ser reaproveitada)
 
   var H = vp.height;
+  var W = vp.width;
 
   // Fix 3a: filtrar zonas de header/footer e numeros de pagina isolados
   var _pageNumRe = /^\d{1,3}$/;
@@ -2545,20 +3128,99 @@ function classifyBlocks(items, vp) {
     if (yRel < 0.04 || yRel > 0.96) return false; // zona header/footer
     if (_pageNumRe.test(l.text.trim())) return false; // numero de pagina solto
     if ((yRel < 0.10 || yRel > 0.93) && _runHeadRe.test(l.text)) return false; // cabecalho/rodape corrente
+    // Cabecalho corrente: titulo do artigo repetido no topo das paginas internas
+    if (!allowTitle && runHeader && yRel < 0.16) {
+      var _ln = String(l.text || '').replace(/^\d{1,4}\s+/, '').replace(/[.…]+\s*$/, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+      if (_ln.length >= 8 && runHeader.indexOf(_ln) !== -1) return false;
+    }
     return true;
   });
   if (!lines.length) return [];
+
+  // ── Correcao de CAPITULAR (drop cap) ────────────────────────────────────
+  // Uma letra inicial grande (capitular) costuma ser mal-agrupada por posicao vertical
+  // com uma linha INFERIOR do paragrafo. Isso (1) rouba a 1a letra da linha de cima e
+  // (2) infla o tamanho de fonte da linha de baixo, que entao e classificada como titulo.
+  // Aqui devolvemos a letra a 1a linha visual e removemos a inflacao de fonte.
+  (function fixDropCaps() {
+    if (lines.length < 2) return;
+    var _fss = lines.map(function(l) { return l.fontSize; }).sort(function(a, b) { return a - b; });
+    var _med = _fss[Math.floor(_fss.length / 2)] || 10;
+    for (var di = 0; di < lines.length; di++) {
+      var dl = lines[di];
+      if (!dl.items || dl.items.length < 2) continue;
+      var cap = dl.items[0];
+      var cch = String(cap.str || '').trim();
+      var cfs = Math.abs(cap.transform[0]) || 0;
+      if (cch.length !== 1 || !/[A-Za-z\u00C0-\u00FF]/.test(cch) || cfs < _med * 1.8) continue;
+      var capX = cap.transform[4];
+      // 1a linha visual = linha imediatamente acima (maior y) e indentada a direita da capitular
+      var tgt = lines[di - 1];
+      if (!tgt || tgt.xMin < capX + cfs * 0.25) continue;
+      // (a) devolve a capitular ao inicio da 1a linha visual ("or mais" -> "Por mais")
+      tgt.text = cch + tgt.text;
+      // (b) reconstroi a linha atual sem a capitular (remove a inflacao de fonte)
+      var rest = dl.items.slice(1);
+      var nt = String(rest[0].str || '');
+      for (var rk = 1; rk < rest.length; rk++) {
+        nt += (needsSpaceBetweenPdfItems(rest[rk - 1], rest[rk], nt) ? ' ' : '') + String(rest[rk].str || '');
+      }
+      dl.items = rest;
+      dl.text = nt.trim();
+      dl.fontSize = Math.abs(rest[0].transform[0]) || _med;
+      dl.xMin = rest[0].transform[4];
+      var _lr = rest[rest.length - 1];
+      dl.xMax = _lr.transform[4] + (_lr.width || 0);
+      var _xc = (dl.xMin + dl.xMax) / 2;
+      dl.xCenter = _xc;
+      dl.isCentered = Math.abs(_xc - W / 2) < W * 0.15;
+      var _fn = rest[0].fontName || '';
+      dl.isBold = /Bold/i.test(_fn);
+      dl.isItalic = /Italic|Oblique/i.test(_fn);
+    }
+  })();
 
   // Estatisticas de fonte para a pagina
   var fontSizes = lines.map(function(l) { return l.fontSize; });
   fontSizes.sort(function(a, b) { return a - b; });
   var medianFs = fontSizes[Math.floor(fontSizes.length / 2)] || 10;
 
-  // Fonte dominante (moda) do corpo — base robusta p/ detectar notas (que sao apenas um pouco menores)
-  var _fsHist = {};
-  lines.forEach(function(l) { var k = Math.round(l.fontSize * 2) / 2; _fsHist[k] = (_fsHist[k] || 0) + 1; });
-  var bodyFs = medianFs, _fsBest = 0;
-  Object.keys(_fsHist).forEach(function(k) { if (_fsHist[k] > _fsBest) { _fsBest = _fsHist[k]; bodyFs = parseFloat(k); } });
+  // bodyFs/bodyLeft/bodyRight: IMPORTANTE calcular a partir da PÁGINA INTEIRA
+  // (as duas colunas juntas), não só das linhas desta chamada. Confirmado com
+  // PDF real: quando uma citação longa ocupa boa parte de UMA coluna, a moda
+  // de fonte/margem calculada só com essa coluna reflete a CITAÇÃO (fonte
+  // menor, mais recuada) em vez do corpo normal — e a citação passa a ser
+  // comparada contra si mesma, nunca sendo reconhecida como recuada. Por
+  // isso `sharedStats`, quando fornecido (ver extractDigitalText), vem das
+  // linhas da página inteira antes do split de coluna.
+  var bodyFs;
+  if (sharedStats && sharedStats.bodyFs != null) {
+    bodyFs = sharedStats.bodyFs;
+  } else {
+    var _fsHist = {};
+    lines.forEach(function(l) { var k = Math.round(l.fontSize * 2) / 2; _fsHist[k] = (_fsHist[k] || 0) + 1; });
+    bodyFs = medianFs; var _fsBest = 0;
+    Object.keys(_fsHist).forEach(function(k) { if (_fsHist[k] > _fsBest) { _fsBest = _fsHist[k]; bodyFs = parseFloat(k); } });
+  }
+
+  // bodyLeft/bodyRight SEMPRE calculados a partir DESTA coluna (a margem é
+  // naturalmente diferente entre coluna esquerda e direita — nunca
+  // compartilhar isso entre colunas). Mas, para não cair na armadilha de uma
+  // coluna dominada por citação/nota (fonte menor) definir a própria margem
+  // da citação como se fosse "normal", a amostra usa só linhas com fonte
+  // igual à do corpo (perto de bodyFs) — excluindo citação/nota do cálculo.
+  var _marginLines = lines.filter(function(l) { return Math.abs(l.fontSize - bodyFs) < 0.6; });
+  if (_marginLines.length < 4) _marginLines = lines; // amostra pequena demais -> usa tudo mesmo
+
+  var _xHist = {};
+  _marginLines.forEach(function(l) { if (!l.isCentered) { var _xk = Math.round(l.xMin / 4) * 4; _xHist[_xk] = (_xHist[_xk] || 0) + 1; } });
+  var bodyLeft = 0, _xBest = 0;
+  Object.keys(_xHist).forEach(function(k) { if (_xHist[k] > _xBest) { _xBest = _xHist[k]; bodyLeft = parseFloat(k); } });
+
+  var _xrHist = {};
+  _marginLines.forEach(function(l) { var _xrk = Math.round(l.xMax / 4) * 4; _xrHist[_xrk] = (_xrHist[_xrk] || 0) + 1; });
+  var bodyRight = W, _xrBest = 0;
+  Object.keys(_xrHist).forEach(function(k) { if (_xrHist[k] > _xrBest) { _xrBest = _xrHist[k]; bodyRight = parseFloat(k); } });
 
   var titleFsMin    = medianFs * 1.4;
   var subtitleFsMin = medianFs * 1.15;
@@ -2573,17 +3235,70 @@ function classifyBlocks(items, vp) {
   var affilRe          = /\b(universidade|university|institute|instituto|dept|department|faculty|escola|college|laborat[o\u00F3]rio|laboratory)\b/i;
 
   var _allCapsHeadRe = /^[A-ZÁÀÂÃÉÊÍÓÔÕÚÜÇŒÆ][A-ZÁÀÂÃÉÊÍÓÔÕÚÜÇŒÆ\s\-:]{2,}$/;
-  var _knownSecList = ['introdução','introducao','introduction','introducción','introduccion','metodologia','metodología','método','metodo','métodos','metodos','materiais e métodos','materiais e metodos','methods','method','methodology','resultados','resultado','results','resultados e discussão','resultados e discussao','discussão','discussao','discussion','discusión','discusion','conclusão','conclusao','conclusões','conclusoes','conclusion','conclusions','conclusión','considerações finais','consideracoes finais','refer��ncias','referencias','referências bibliográficas','references','bibliografia','bibliography','resumo','abstract','resumen','agradecimentos','acknowledgements','acknowledgments','anexo','anexos','apêndice','apendice','apêndices','apendices','revisão de literatura','revisao de literatura','revisão bibliográfica','referencial teórico','referencial teorico','fundamentação teórica','fundamentacao teorica'];
-  function _isSectionStart(t) {
+  var _knownSecList = ['introdução','introducao','introduction','introducción','introduccion','metodologia','metodología','método','metodo','métodos','metodos','materiais e métodos','materiais e metodos','methods','method','methodology','resultados','resultado','results','resultados e discussão','resultados e discussao','discussão','discussao','discussion','discusión','discusion','conclusão','conclusao','conclusões','conclusoes','conclusion','conclusions','conclusión','considerações finais','consideracoes finais','referências','referencias','referências bibliográficas','references','bibliografia','bibliography','resumo','abstract','resumen','agradecimentos','acknowledgements','acknowledgments','anexo','anexos','apêndice','apendice','apêndices','apendices','revisão de literatura','revisao de literatura','revisão bibliográfica','referencial teórico','referencial teorico','fundamentação teórica','fundamentacao teorica'];
+  function _isSectionStart(t, noAllCaps) {
     if (!t) return false;
     var tc = String(t).replace(/([A-Za-z\u00C0-\u024F])\d{1,3}$/, '$1').trim();
-    if (sectionRe.test(tc)) return true;
-    if (_allCapsHeadRe.test(tc) && tc.length >= 3 && tc.length <= 60) return true;
+    var _sm = tc.match(sectionRe);
+    if (_sm) {
+      // Cabecalho numerado real e CURTO e NAO e uma frase completa. Evita promover
+      // corpo que comeca com numero (ex.: "1930 Foi o ano de grandes mudancas.") a titulo.
+      var _hp = _sm[2] || '';
+      if (_hp.split(/\s+/).length <= 12 && tc.length <= 80 && !/[.!?]$/.test(tc)) return true;
+    }
+    // Dentro da lista de Referências, uma linha em CAIXA ALTA quase sempre é
+    // sobrenome de autor ou nome de organização (ex.: "FEDERAÇÃO DAS
+    // INDÚSTRIAS DO ESTADO DE SÃO PAULO"), não um título de seção — suprime
+    // esse gatilho genérico ali (os outros, mais específicos, continuam).
+    if (!noAllCaps && _allCapsHeadRe.test(tc) && tc.length >= 3 && tc.length <= 60) return true;
     var noNum = tc.replace(/^\s*(?:\d+(?:\.\d+)*[.)]?|[IVXLCDM]+[.)])\s*/i, '').trim();
     var kw = noNum.toLowerCase().replace(/[\s:.\-]+$/, '');
     if (_knownSecList.indexOf(kw) !== -1 && noNum.length <= 60) return true;
     return false;
   }
+  // ── Remocao de cabecalho/rodape corrente (linha isolada na margem) ──────────
+  // Generico: NAO assume que o topo e o titulo. Remove uma linha isolada na faixa
+  // superior (apenas em paginas internas, p/ preservar o titulo real) ou inferior,
+  // quando ha um espaco vertical grande separando-a do corpo — a regiao da pagina
+  // "que nao costuma ter texto".
+  (function stripRunningHeadFoot() {
+    if (lines.length < 4) return;
+    var gaps = [];
+    for (var gi = 0; gi < lines.length - 1; gi++) gaps.push(lines[gi].y - lines[gi + 1].y);
+    var sg = gaps.slice().sort(function(a, b) { return a - b; });
+    var medGap = sg[Math.floor(sg.length / 2)] || 0;
+    var bigGap = Math.max(medGap * 1.6, H * 0.025);
+    function _removable(l) {
+      var t = (l && l.text || '').trim();
+      if (t.length < 3) return true;
+      if (_isSectionStart(t)) return false;
+      if (abstractRe.test(t) || abstractInlineRe.test(t) || keywordsRe.test(t)) return false;
+      return true;
+    }
+    // Cabecalho (topo): localiza o "gap grande" que separa a regiao de cabecalho
+    // (1-2 linhas isoladas no alto) do corpo e remove TUDO acima dele. Isso trata
+    // cabecalhos de varias linhas (ex.: titulo do artigo quebrado em 2 linhas).
+    if (!isFirstPage && lines.length > 3) {
+      var cut = -1, scanN = Math.min(3, lines.length - 1);
+      for (var ti = 0; ti < scanN; ti++) {
+        if ((1 - lines[ti].y / H) >= 0.22) break;
+        if ((lines[ti].y - lines[ti + 1].y) > bigGap) { cut = ti; break; }
+      }
+      if (cut >= 0) {
+        var okAll = true;
+        for (var ci = 0; ci <= cut; ci++) { if (!_removable(lines[ci])) { okAll = false; break; } }
+        if (okAll) lines.splice(0, cut + 1);
+      }
+    }
+    var guard = 0;
+    // Rodape (base) — em qualquer pagina
+    while (lines.length > 3 && guard++ < 3) {
+      var bot = lines[lines.length - 1];
+      if ((1 - bot.y / H) > 0.84 && (lines[lines.length - 2].y - lines[lines.length - 1].y) > bigGap && _removable(bot)) lines.pop();
+      else break;
+    }
+  })();
+
   var blocks  = [];
   var current = null;
 
@@ -2684,8 +3399,9 @@ function classifyBlocks(items, vp) {
   var inKeywords = false;
   var titleFound = false;
   var authorZone = false;
+  var _inReferences = !!inReferencesStart; // true após a seção de Referências começar (nesta chamada ou numa anterior)
 
-  lines.forEach(function(line) {
+  lines.forEach(function(line, _li) {
     var t  = line.text;
     var fs = line.fontSize;
     if (line._isTable) return; // texto de tabela e capturado como imagem, nao reconstruido
@@ -2754,7 +3470,7 @@ function classifyBlocks(items, vp) {
     // Isso cobre artigos onde o título é 14pt e o corpo é 12pt (razão ~1.17)
     var isTitleBySize  = fs >= titleFsMin;
     var isTitleByBold  = !titleFound && line.isBold && line.isCentered && fs >= medianFs * 1.1;
-    if (!titleFound && line.isCentered && (isTitleBySize || isTitleByBold)) {
+    if (allowTitle && !titleFound && line.isCentered && (isTitleBySize || isTitleByBold)) {
       titleFound = true;
       authorZone = true;
       if (current && current.type === 'title') {
@@ -2766,7 +3482,7 @@ function classifyBlocks(items, vp) {
     }
 
     // 6. Continuacao do titulo (mesma fonte grande, centrado)
-    if (titleFound && current && current.type === 'title' && fs >= titleFsMin * 0.9 && line.isCentered) {
+    if (allowTitle && titleFound && current && current.type === 'title' && fs >= titleFsMin * 0.9 && line.isCentered) {
       appendLine(line);
       return;
     }
@@ -2788,23 +3504,80 @@ function classifyBlocks(items, vp) {
       authorZone = false;
     }
 
-    // 7b. Nota de rodapé: o tamanho de fonte menor que o corpo é o indicador principal
-    // (notas costumam ser ~0.8x do corpo) combinado com posição na metade inferior da página.
+    // 7a/7b. Citação longa vs. Nota de rodapé — ambas em fonte menor que o corpo.
+    // DISCRIMINADOR PRINCIPAL = RECUO (indentacao), nao a posicao vertical:
+    //   - Citacao longa : RECUADA (xMin > margem do corpo). Pode chegar ao fim da
+    //                     pagina e continuar na proxima -> NAO vira rodape.
+    //   - Nota de rodape: ALINHADA A ESQUERDA (na margem do corpo), na faixa inferior,
+    //                     ou iniciada por marcador/numero de nota.
     var _yRel = 1 - (line.y / H); // 0=topo, 1=base
     var _isSmall = fs <= bodyFs - 0.5 || fs <= bodyFs * 0.93;
-    if (current && current.type === 'footnote' && _isSmall) {
-      // continua acumulando linhas pequenas seguidas (notas que quebram em várias linhas)
+    var _indent = line.xMin - bodyLeft;
+    var _isIndented = _indent > W * 0.045;
+    var _strongIndent = _indent > W * 0.10;
+    var _fnMark = /^\s*(?:[\u2020\u2021*]|\(?\d{1,3}[).\]]|[\u00b9\u00b2\u00b3\u2070-\u2079])\s*\S/.test(t);
+    // Linha de NOTA DE RODAPE: pequena, NAO recuada, e na faixa inferior OU com marcador.
+    var _isFootnoteLine = _isSmall && !_isIndented && (_yRel > 0.72 || _fnMark);
+    // "Centrado" corrigido: uma citacao justificada ALCANCA a margem direita do corpo, ao
+    // contrario de um titulo centrado (curto). So tratamos como centrado quando NAO alcanca.
+    var _reachesRight = (bodyRight - line.xMax) < W * 0.05;
+    var _notCentered = !line.isCentered || _reachesRight;
+
+    // Continuação de nota de rodapé (linhas pequenas seguidas, alinhadas à esquerda)
+    if (current && current.type === 'footnote' && _isSmall && !_isIndented) {
       appendLine(line);
       return;
     }
-    if (_isSmall && _yRel > 0.5 && t.length >= 2 && !_isSectionStart(t)) {
+    // Continuação de citação longa: PRECISA bater com a fonte estabelecida
+    // pela 1a linha da própria citação (current._qFs), e (recuada OU pequena).
+    // ANTES: continuava só com "recuada OU pequena", sem exigir a MESMA
+    // fonte — e o recuo de citação, nesse documento, coincide por acaso com
+    // o recuo de PRIMEIRA LINHA de um parágrafo novo comum (mesma distância,
+    // fonte de corpo normal). Resultado: a 1a frase do parágrafo seguinte à
+    // citação era engolida como se ainda fosse citação. Confirmado com PDF
+    // real. Exigir a mesma fonte resolve os dois casos de citação em ABNT:
+    // citação com fonte reduzida (fs vira menor, exige bater com essa fonte
+    // menor) e citação em bloco com a fonte do corpo (fs igual ao corpo,
+    // exige bater com essa fonte igual — uma linha de fonte diferente nunca
+    // seria confundida com continuação de nenhuma das duas).
+    if (current && current.type === 'quote' && _notCentered && !_isSectionStart(t, _inReferences) &&
+        current._qFs != null && Math.abs(fs - current._qFs) < 0.6 &&
+        (_isIndented || (_isSmall && !_isFootnoteLine))) {
+      appendLine(line);
+      return;
+    }
+    // Recuo SUSTENTADO: bloco inteiro deslocado (citacao longa em bloco), diferente do
+    // recuo de 1a linha de paragrafo. Confirma olhando a proxima linha nao-vazia: se ela
+    // tambem esta recuada de forma semelhante, e uma citacao em bloco — mesmo com a fonte
+    // do corpo (sem reducao de tamanho), caso comum em ABNT.
+    var _nl = null;
+    for (var _k = _li + 1; _k < lines.length && _k <= _li + 2; _k++) {
+      if (lines[_k] && (lines[_k].text || '').trim()) { _nl = lines[_k]; break; }
+    }
+    var _nextIndent = _nl ? (_nl.xMin - bodyLeft) : -1;
+    var _nlNotCentered = _nl && (!_nl.isCentered || (bodyRight - _nl.xMax) < W * 0.05);
+    var _blockIndent = _isIndented && _nl && _nlNotCentered &&
+                       _nextIndent > W * 0.03 && Math.abs(_nextIndent - _indent) < W * 0.045;
+    // Início de citação longa: recuo+fonte menor, recuo forte, OU recuo sustentado
+    if (((_isIndented && _isSmall) || _strongIndent || _blockIndent) && !_isFootnoteLine &&
+        t.length >= 2 && _notCentered && !_isSectionStart(t, _inReferences)) {
+      inAbstract = false; inKeywords = false;
+      pushBlock('quote', line);
+      current._qFs = fs;
+      return;
+    }
+    // Início de nota de rodapé: pequena, alinhada à esquerda, faixa inferior ou marcador
+    if (_isFootnoteLine && t.length >= 2 && !_isSectionStart(t, _inReferences)) {
       inAbstract = false; inKeywords = false;
       pushBlock('footnote', line);
       return;
     }
 
     // 8. Fix 3d: secao numerada/ALL-CAPS/nome conhecido — sem exigir tamanho de fonte nem negrito
-    if (_isSectionStart(t)) {
+    if (_isSectionStart(t, _inReferences)) {
+      var _tcNorm = t.replace(/^\s*(?:\d+(?:\.\d+)*[.)]?|[IVXLCDM]+[.)])\s*/i, '').trim()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[\s:.\-]+$/, '');
+      if (/^refer[eê]ncias?( bibliogr[aá]ficas)?$|^bibliograph(y|ia)$|^references$/.test(_tcNorm)) _inReferences = true;
       pushBlock('section', line);
       return;
     }
@@ -2815,7 +3588,7 @@ function classifyBlocks(items, vp) {
     // Isso cobre paginas de referencias/conclusao onde nao ha titulo proprio.
     var allCapsRe = /^[A-ZÁÀÂÃÉÊÍÓÔÕÚÜÇŒÆ][A-ZÁÀÂÃÉÊÍÓÔÕÚÜÇŒÆ\s\-:]{2,}$/;
     var notInTitleZone = (1 - (line.y / H)) > 0.20;
-    if ((titleFound || notInTitleZone) && line.isBold && allCapsRe.test(t) && t.length >= 3 && t.length <= 60) {
+    if (!_inReferences && (titleFound || notInTitleZone) && line.isBold && allCapsRe.test(t) && t.length >= 3 && t.length <= 60) {
       pushBlock('section', line);
       return;
     }
@@ -2827,7 +3600,7 @@ function classifyBlocks(items, vp) {
     }
 
     // 9. Subtitulo centrado com fonte maior (antes de achar titulo)
-    if (line.isCentered && fs >= subtitleFsMin && !titleFound) {
+    if (allowTitle && line.isCentered && fs >= subtitleFsMin && !titleFound) {
       pushBlock('subtitle', line);
       return;
     }
@@ -2835,15 +3608,23 @@ function classifyBlocks(items, vp) {
     // 9b. Secao por nome conhecido (Introducao, Metodos, Resultados, Referencias...)
     var _secNoNum = t.replace(/^\s*(?:\d+(?:\.\d+)*[.)]?|[IVXLCDM]+[.)])\s*/i, '').trim();
     var _kw = _secNoNum.toLowerCase().replace(/[\s:.\-]+$/, '');
-    var _knownList = ['introdução','introducao','introduction','introducción','introduccion','metodologia','metodología','método','metodo','métodos','metodos','materiais e métodos','materiais e metodos','methods','method','methodology','resultados','resultado','results','resultados e discussão','resultados e discussao','discussão','discussao','discussion','discusión','discusion','conclusão','conclusao','conclusões','conclusoes','conclusion','conclusions','conclusión','considerações finais','consideracoes finais','referências','referencias','referências bibliográficas','references','bibliografia','bibliography','resumo','abstract','resumen','agradecimentos','acknowledgements','acknowledgments','anexo','anexos','apêndice','apendice','apêndices','apendices','revisão de literatura','revisao de literatura','revisão bibliográfica','referencial teórico','referencial teorico','fundamentação teórica','fundamentacao teorica'];
-    if (_knownList.indexOf(_kw) !== -1 && _secNoNum.length <= 60) {
+    if (_knownSecList.indexOf(_kw) !== -1 && _secNoNum.length <= 60) {
+      if (/^refer[eê]ncias?( bibliogr[aá]ficas)?$|^bibliograph(y|ia)$|^references$/.test(_kw.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))) _inReferences = true;
       pushBlock('section', line);
       return;
     }
     // 9c. Titulo de secao curto em negrito (sem pontuacao final, Caixa de Titulo)
-    if (!authorZone && line.isBold && !line.isItalic &&
-        t.length >= 3 && t.length <= 55 && t.split(/\s+/).length <= 9 &&
+    // Endurecido para reduzir falso-positivo (corpo em negrito virando titulo):
+    //  - a fonte NAO pode ser menor que o corpo (fs >= bodyFs*0.98);
+    //  - no maximo 8 palavras;
+    //  - nao pode terminar em conjuncao/preposicao (linha que continua no corpo);
+    //  - NAO dentro da lista de Referencias (nome de autor/organizacao em
+    //    negrito nao deve virar "titulo de secao").
+    if (!_inReferences && !authorZone && line.isBold && !line.isItalic &&
+        fs >= bodyFs * 0.98 &&
+        t.length >= 3 && t.length <= 55 && t.split(/\s+/).length <= 8 &&
         !/[.;:,!?]$/.test(t) && /^[A-Z0-9\u00C0-\u00DD]/.test(t) &&
+        !/\b(e|ou|de|da|do|que|para|com|por|the|and|or|of|to)$/i.test(t) &&
         !emailRe.test(t) && !affilRe.test(t)) {
       pushBlock('section', line);
       return;
@@ -2866,6 +3647,7 @@ function classifyBlocks(items, vp) {
   });
 
   blocks._tableRegions = _tableRegions;
+  blocks._inReferences = _inReferences;
   return blocks;
 }
 
@@ -2882,6 +3664,7 @@ function blocksToText(blocks) {
       case 'keywords': out.push('\xA7KEYWORDS\xA7'+t); break;
       case 'section':  out.push('\xA7SECTION\xA7'+t); break;
       case 'footnote': out.push('\xA7FOOTNOTE\xA7'+t); break;
+      case 'quote':    out.push('\xA7QUOTE\xA7'+t); break;
       case 'abstract':
         var absLines = block.lines || [];
         if (absLines.length === 0) {
@@ -2919,7 +3702,7 @@ function blocksToText(blocks) {
 // ── Extract via Worker (pdfminer server-side) ────────────────────────────────
 var EXTRACT_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:8787/extract'
-  : 'https://epubly-worker.pedro06bf.workers.dev/extract';
+  : 'https://parks-sand-hewlett-katrina.trycloudflare.com/extract';
 
 async function extractWithWorker(file, selectedPages, onProgress) {
   // Converter PDF para base64
@@ -2977,6 +3760,8 @@ async function extractDigitalText(doc, splitDouble, twoColumns, selectedPages, o
   }
 
   var _isArticle = false;
+  var _runHeader = '';
+  var _inReferencesState = false;
 
   for (var idx = 0; idx < selected.length; idx++) {
     onProgress(idx + 1, selected.length);
@@ -2984,6 +3769,7 @@ async function extractDigitalText(doc, splitDouble, twoColumns, selectedPages, o
     var page = await doc.getPage(pageNum);
     var tc   = await page.getTextContent({ includeMarkedContent: false });
     var vp   = page.getViewport({ scale: 1 });
+    var _glyphLines = await buildGlyphLines(page); // posições por glifo p/ corrigir palavras coladas
 
     var ratio = vp.width / vp.height;
     var W2 = vp.width;
@@ -2992,12 +3778,19 @@ async function extractDigitalText(doc, splitDouble, twoColumns, selectedPages, o
     // Detecta artigo científico nas primeiras 3 páginas (apenas se NÃO for duas colunas)
     if (!isTwoCol && !_isArticle && idx <= 2) {
       _isArticle = isScientificArticle(tc.items, vp);
-      if (_isArticle) addLog('Layout de artigo cient��fico detectado (p.' + (idx + 1) + ')', 'ok');
+      if (_isArticle) addLog('Layout de artigo científico detectado (p.' + (idx + 1) + ')', 'ok');
     }
 
     // Artigos: classifyBlocks em todas as páginas (títulos §SECTION§ consistentes)
     if (!isTwoCol && _isArticle) {
-      var _blocks = classifyBlocks(tc.items, vp);
+      var _blocks = classifyBlocks(tc.items, vp, _glyphLines, idx === 0, _runHeader, idx === 0, _inReferencesState);
+      _inReferencesState = _blocks._inReferences || _inReferencesState;
+      if (idx === 0 && !_runHeader) {
+        var _tb = _blocks.filter(function(b){ return b.type === 'title'; })[0];
+        if (_tb && _tb.text) {
+          _runHeader = _tb.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+        }
+      }
       if (idx <= 2) {
         addLog('Página ' + (idx + 1) + ': ' + _blocks.length + ' blocos detectados', 'ok');
       }
@@ -3006,140 +3799,142 @@ async function extractDigitalText(doc, splitDouble, twoColumns, selectedPages, o
       continue;
     }
 
-    var lineMap = {};
-    tc.items.forEach(function(item) {
-      if (!item.str) return;
-      var y = Math.round(item.transform[5] / 2) * 2;
-      if (!lineMap[y]) lineMap[y] = [];
-      lineMap[y].push(item);
-    });
-
-    var sortedYs = Object.keys(lineMap).map(Number).sort(function(a, b) { return b - a; });
-
-    var gaps = [];
-    for (var gi = 1; gi < sortedYs.length; gi++) {
-      gaps.push(sortedYs[gi-1] - sortedYs[gi]);
-    }
-    gaps.sort(function(a,b){return a-b;});
-    var medGap = gaps.length ? gaps[Math.floor(gaps.length/2)] : 12;
-    var paraThreshold = medGap * 1.8;
-
-    var paragraphs = [];
-    var currentPara = [];
-    var prevY = null;
-
-    sortedYs.forEach(function(y) {
-      var items = lineMap[y].sort(function(a, b) { return a.transform[4] - b.transform[4]; });
-      var lineText = '';
-      items.forEach(function(item, i) {
-        var s = item.str;
-        if (!s) return;
-        if (i === 0) {
-          lineText = s;
-          return;
+    // ── Agrupar itens em linhas + parágrafos ────────────────────────────────
+    // ANTES: essa lógica existia aqui reimplementada do zero (2 vezes: p/ 1
+    // coluna e p/ itemsToText), SEM usar a função groupIntoLines() já
+    // definida globalmente (a mesma usada por classifyBlocks). Ou seja,
+    // havia 3 implementações independentes da mesma coisa no arquivo — a
+    // mesma página podia agrupar diferente dependendo de qual caminho de
+    // código ela caía. Agora as duas chamam a função global groupIntoLines().
+    function _pageItemsToText(itemList) {
+      var pLines = groupIntoLines(itemList, vp, _glyphLines);
+      if (!pLines.length) return '';
+      var pGaps = [];
+      for (var pgi = 1; pgi < pLines.length; pgi++) pGaps.push(pLines[pgi - 1].y - pLines[pgi].y);
+      pGaps.sort(function(a, b) { return a - b; });
+      var pMedGap = pGaps.length ? pGaps[Math.floor(pGaps.length / 2)] : 12;
+      var pThreshold = pMedGap * 1.8;
+      var pParas = [], pCur = [], pPrevY = null;
+      pLines.forEach(function(l) {
+        var lt = l.text;
+        if (l.isBold && l.isItalic) lt = '***' + lt + '***';
+        else if (l.isBold)          lt = '**' + lt + '**';
+        else if (l.isItalic)        lt = '*' + lt + '*';
+        if (pPrevY !== null && (pPrevY - l.y) > pThreshold) {
+          if (pCur.length) { pParas.push(pCur.join(' ')); pCur = []; }
         }
-        var prev = items[i-1];
-        lineText += (needsSpaceBetweenPdfItems(prev, item, lineText) ? ' ' : '') + s;
+        pCur.push(lt);
+        pPrevY = l.y;
       });
-
-      lineText = lineText.trim();
-      if (!lineText) return;
-
-      var font = (items[0] && items[0].fontName) || '';
-      var isBold   = /Bold/i.test(font);
-      var isItalic = /Italic|Oblique/i.test(font);
-      if (isBold && isItalic) lineText = '***' + lineText + '***';
-      else if (isBold)        lineText = '**' + lineText + '**';
-      else if (isItalic)      lineText = '*' + lineText + '*';
-
-      if (prevY !== null && (prevY - y) > paraThreshold) {
-        if (currentPara.length) {
-          paragraphs.push(currentPara.join(' '));
-          currentPara = [];
-        }
-      }
-      currentPara.push(lineText);
-      prevY = y;
-    });
-    if (currentPara.length) paragraphs.push(currentPara.join(' '));
-
-    var text = paragraphs.join('\n\n').trim();
+      if (pCur.length) pParas.push(pCur.join(' '));
+      return pParas.join('\n\n').trim();
+    }
 
     var ratio = vp.width / vp.height;
     var W2 = vp.width;
 
-    // ── itemsToText: monta texto de uma lista de items ordenando por Y depois X ──
-    function itemsToText(itemList) {
-      var lmap = {};
-      itemList.forEach(function(item) {
-        if (!item.str || !item.str.trim()) return;
-        var y = Math.round(item.transform[5] / 2) * 2;
-        if (!lmap[y]) lmap[y] = [];
-        lmap[y].push(item);
-      });
-      var ys = Object.keys(lmap).map(Number).sort(function(a,b){ return b-a; });
-      if (!ys.length) return '';
-      var gg = [];
-      for (var gi=1; gi<ys.length; gi++) gg.push(ys[gi-1]-ys[gi]);
-      gg.sort(function(a,b){ return a-b; });
-      var mGap = gg.length ? gg[Math.floor(gg.length/2)] : 12;
-      var pThr = mGap * 1.8;
-      var paras = [], curP = [], pY = null;
-      ys.forEach(function(y) {
-        var its = lmap[y].sort(function(a,b){ return a.transform[4]-b.transform[4]; });
-        var lt = '';
-        its.forEach(function(it, i) {
-          if (!it.str) return;
-          if (i===0){ lt=it.str; return; }
-          var prev=its[i-1];
-          lt += (needsSpaceBetweenPdfItems(prev, it, lt) ? ' ' : '')+it.str;
-        });
-        lt = lt.trim(); if (!lt) return;
-        if (pY !== null && (pY-y) > pThr) { if(curP.length){ paras.push(curP.join(' ')); curP=[]; } }
-        curP.push(lt); pY = y;
-      });
-      if (curP.length) paras.push(curP.join(' '));
-      return paras.join('\n\n').trim();
-    }
-
-    // ── Detectar duas colunas ─────────────────────────────────────────────────-
-
-    var wordItems = tc.items.filter(function(it){
-      return it.str && it.str.trim().length > 0 && (it.width||0) > 1;
-    });
-
-    var colSplitX = null;
-
-    if (isTwoCol && wordItems.length > 15) {
-      // Como sabemos que é 2 colunas, vamos encontrar o ponto de divisão exato (maior gap)
-      var allX = wordItems.map(function(it){ return it.transform[4]; }).sort(function(a,b){ return a-b; });
-      var bestGap = 0, bestMid = W2 / 2;
-      for (var xi = 1; xi < allX.length; xi++) {
-        var gap = allX[xi] - allX[xi-1];
-        var mid2 = (allX[xi] + allX[xi-1]) / 2;
-        if (mid2 > W2 * 0.3 && mid2 < W2 * 0.7 && gap > bestGap) {
-          bestGap = gap;
-          bestMid = mid2;
-        }
+    if (isTwoCol) {
+      // ── Split de 2 colunas por LINHA (cluster do início de cada linha) ─────
+      // ANTES: o split era feito por ITEM, usando "o maior vão entre os X de
+      // início de todos os itens da página" — em página densa isso podia
+      // achar um vão que não é a fronteira real das colunas (confirmado com
+      // PDF real: pegava um vão de ~55pt no meio da coluna esquerda em vez do
+      // vão real entre colunas), jogando quase tudo pro mesmo lado e
+      // produzindo texto intercalado linha-a-linha entre as duas colunas.
+      // Agora classifica por LINHA (via cluster de início de linha, muito
+      // mais estável) e roda a MESMA classifyBlocks (título/seção/resumo/
+      // nota/citação) separadamente em cada coluna — antes, páginas de 2
+      // colunas nunca passavam por classifyBlocks (só texto corrido puro),
+      // porque quase todo artigo científico real é 2 colunas, essa era a
+      // formatação (§TITLE§/§SECTION§ etc.) NUNCA aparecendo no caso mais
+      // comum de uso.
+      // ── Split de 2 colunas por LINHA, com medição do gutter real ───────────
+      // ANTES (2ª iteração): já classificava por linha via cluster, mas ao
+      // decidir se uma linha da esquerda e uma da direita no MESMO Y deviam
+      // ser separadas, usava um limiar de vão fixo (~40-66pt). Em página com
+      // gutter estreito (confirmado com PDF real: só ~20pt nessa página),
+      // esse limiar não disparava e as duas se fundiam numa linha só,
+      // misturando texto de parágrafos diferentes. Agora mede o gutter REAL
+      // da página (moda do fim das linhas da esquerda / início das da
+      // direita) numa 1ª passada aproximada, e reconstrói as linhas cortando
+      // exatamente nesse X numa 2ª passada — funciona mesmo com gutter estreito.
+      var _approxLines = groupIntoLines(tc.items, vp, _glyphLines);
+      var _approxSplit = splitLinesByColumn(_approxLines);
+      var allLines, colSplit;
+      if (_approxSplit.right.length > 0) {
+        var _gutterX = estimateGutterX(_approxSplit.left, _approxSplit.right);
+        allLines = _gutterX != null ? groupIntoLines(tc.items, vp, _glyphLines, _gutterX) : _approxLines;
+        colSplit = splitLinesByColumn(allLines);
+      } else {
+        allLines = _approxLines;
+        colSplit = _approxSplit;
       }
-      colSplitX = bestMid;
-    }
-    if (colSplitX !== null) {
-      const leftItems  = wordItems.filter(it => it.transform[4] + (it.width||0)/2 < colSplitX);
-      const rightItems = wordItems.filter(it => it.transform[4] + (it.width||0)/2 >= colSplitX);
-      let combinedText = [itemsToText(leftItems), itemsToText(rightItems)].filter(Boolean).join('\n\n');
-      combinedText = stripMarkers(fixHyphensStr(combinedText));
-      addLog(`p.${pageNum}: 2 colunas (split x=${Math.round(colSplitX)} L=${leftItems.length} R=${rightItems.length})`, 'ok');
-      results.push({ text: combinedText, pageNum, side: null, dataUrl: null });
+      if (colSplit.right.length > 0) {
+        var _recoveredTitleFrag = null;
+        var _authorCandidate = null;
+        if (idx === 0 && colSplit.left.length && colSplit.right.length) {
+          var _topRight = colSplit.right[0];
+          var _topLeftY = colSplit.left[0].y;
+          if (_topRight.y >= _topLeftY - 4 && _topRight.text.length <= 80 &&
+              /^[A-ZÀ-Ü0-9][A-ZÀ-Ü0-9\s,.:\-"“”'’]{5,}$/.test(_topRight.text)) {
+            _recoveredTitleFrag = _topRight.text;
+            colSplit.left = [_topRight].concat(colSplit.left);
+            colSplit.right = colSplit.right.slice(1);
+          }
+          // Nome do autor: 1-3 linhas curtas isoladas logo no topo do que
+          // sobrou da coluna direita (mesmo padrão que stripRunningHeadFoot
+          // usaria pra reconhecer cabeçalho — aqui só CAPTURAMOS o texto pro
+          // cabeçalho corrente, sem apagar a linha, já que na coluna direita
+          // da 1a página essa detecção de autores não roda, sem allowTitle).
+          // Escaneia mais de 1 linha porque às vezes vem um marcador de nota
+          // solto (ex.: "∗") antes do nome do autor propriamente dito.
+          if (colSplit.right.length > 1) {
+            var _cut = -1;
+            for (var _ti = 0; _ti < Math.min(3, colSplit.right.length - 1); _ti++) {
+              if ((colSplit.right[_ti].y - colSplit.right[_ti + 1].y) > 30) { _cut = _ti; break; }
+            }
+            if (_cut >= 0) {
+              var _combined = colSplit.right.slice(0, _cut + 1).map(function(l){ return l.text; }).join(' ').trim();
+              if (_combined.length >= 3 && _combined.length <= 80) _authorCandidate = _combined;
+            }
+          }
+        }
+        var _sharedStats = computePageBodyStats(colSplit.left.concat(colSplit.right), vp.width);
+        var leftBlocks = classifyBlocksFromLines(colSplit.left, vp, idx === 0, _runHeader, idx === 0, _inReferencesState, _sharedStats);
+        _inReferencesState = leftBlocks._inReferences || _inReferencesState;
+        var rightBlocks = classifyBlocksFromLines(colSplit.right, vp, false, _runHeader, idx === 0, _inReferencesState, _sharedStats);
+        _inReferencesState = rightBlocks._inReferences || _inReferencesState;
+        if (idx === 0 && !_runHeader) {
+          var _tb2 = leftBlocks.concat(rightBlocks).filter(function(b){ return b.type === 'title'; })[0];
+          var _ab2 = leftBlocks.concat(rightBlocks).filter(function(b){ return b.type === 'authors'; })[0];
+          var _titleFull = (_recoveredTitleFrag ? _recoveredTitleFrag + ' ' : '') + (_tb2 && _tb2.text ? _tb2.text : '') +
+            (_ab2 && _ab2.text ? ' ' + _ab2.text : '') + (_authorCandidate ? ' ' + _authorCandidate : '');
+          if (_titleFull.trim()) {
+            _runHeader = _titleFull.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+          }
+        }
+        if (idx <= 2) {
+          addLog('p.' + (idx + 1) + ': 2 colunas, ' + leftBlocks.length + '+' + rightBlocks.length + ' blocos (L=' + colSplit.left.length + ' R=' + colSplit.right.length + ' linhas)', 'ok');
+        }
+        var _allBlocks = leftBlocks.concat(rightBlocks);
+        var _text2 = blocksToText(_allBlocks);
+        results.push({ text: _text2, pageNum: pageNum, side: null, dataUrl: null, tableRegions: (leftBlocks._tableRegions || []).concat(rightBlocks._tableRegions || []) });
+      } else {
+        // Página marcada como 2-col no documento mas esta página específica
+        // não tem separação clara -> trata como coluna única.
+        var _blocksSingle = classifyBlocksFromLines(allLines, vp, idx === 0, _runHeader, idx === 0, _inReferencesState);
+        _inReferencesState = _blocksSingle._inReferences || _inReferencesState;
+        results.push({ text: blocksToText(_blocksSingle), pageNum: pageNum, side: null, dataUrl: null, tableRegions: _blocksSingle._tableRegions });
+      }
     } else {
-      let cleaned = stripMarkers(fixHyphensStr(text));
+      var cleaned = stripMarkers(fixHyphensStr(_pageItemsToText(tc.items)));
       results.push({ text: cleaned, pageNum, side: null, dataUrl: null });
     }
   }
   return results;
 }
 
-// ── Gemini OCR (batch) ────────────────────────────────────────────────────────
+// ── OCR em lote (Qwen2.5-VL via OpenRouter) ─────────────────────────────────
 var OCR_LANG_MAP = { pt: 'português', en: 'inglês', es: 'espanhol', fr: 'francês', de: 'alemão', it: 'italiano', la: 'latim' };
 
 async function resolveOCROptions(doc, selectedPages, twoColumns) {
@@ -3255,7 +4050,9 @@ function buildOCRPrompt(n, lang, clean, ocrOpts) {
   );
 }
 
-async function geminiOCRBatch(pages, lang, clean, ocrOpts) {
+async function geminiOCRBatch(pages, lang, clean, ocrOpts, _isQualityRetry) {
+  // Nome mantido por compatibilidade com o resto do arquivo — o provedor real
+  // é Qwen2.5-VL via OpenRouter (cadeia OR_MODELS: 72B → 32B → 7B), não Gemini.
   var n = pages.length;
   var parts = [];
   var prompt = buildOCRPrompt(n, lang, clean, ocrOpts || { mode: 'book', twoColumns: false });
@@ -3265,13 +4062,23 @@ async function geminiOCRBatch(pages, lang, clean, ocrOpts) {
     parts.push({ inline_data: { mime_type: 'image/jpeg', data: pages[j].dataUrl.split(',')[1] } });
   }
 
+  // max_tokens ESCALADO pelo número de páginas do lote — ANTES era um valor
+  // fixo (4096) compartilhado entre até 3 páginas. Página densa (2 colunas,
+  // artigo acadêmico) sozinha já pode passar de 1200-1500 tokens transcrita;
+  // 3 delas facilmente estouram 4096, cortando a transcrição no meio SEM
+  // AVISO NENHUM (o código só lia o texto que voltou, nunca checava se tinha
+  // sido cortado) — essa é a causa mais provável de "pedaço de texto sumindo"
+  // no OCR. Agora: orçamento por página + checagem de finish_reason=="length"
+  // (ver abaixo) pra detectar corte e reprocessar em vez de aceitar truncado.
+  var maxTok = Math.min(8192, n * 1800 + 600);
+
   var totalAttempts = 0;
   var maxAttempts = OR_MODELS.length * 2;
 
   while (totalAttempts < maxAttempts) {
     totalAttempts++;
     try {
-      var res = await callAI(parts, 4096);
+      var res = await callAI(parts, maxTok);
 
       if (!res.ok) {
         var errBody = await res.json().catch(function () { return {}; });
@@ -3292,7 +4099,32 @@ async function geminiOCRBatch(pages, lang, clean, ocrOpts) {
         throw new Error('API ' + res.status + ': ' + errMsg.slice(0, 200));
       }
 
-      var full = await parseAIResponse(res);
+      var _parsed = await parseAIResponseFull(res);
+      var full = _parsed.content;
+
+      // Resposta CORTADA por limite de tokens: não aceita como está.
+      //  - Lote com mais de 1 página -> divide ao meio e reprocessa cada
+      //    metade separadamente (menos páginas por chamada = mais orçamento
+      //    de tokens por página).
+      //  - Lote de 1 página só -> tenta de novo com o dobro do orçamento de
+      //    tokens (até o teto de 8192).
+      if (_parsed.finishReason === 'length') {
+        if (n > 1) {
+          addLog('Resposta cortada (limite de tokens) — dividindo lote de ' + n + ' em lotes menores', 'warn');
+          var mid = Math.ceil(n / 2);
+          var firstHalf = await geminiOCRBatch(pages.slice(0, mid), lang, clean, ocrOpts, _isQualityRetry);
+          var secondHalf = await geminiOCRBatch(pages.slice(mid), lang, clean, ocrOpts, _isQualityRetry);
+          return firstHalf.concat(secondHalf);
+        } else if (maxTok < 8192) {
+          addLog('Resposta cortada — tentando de novo com mais espaço', 'warn');
+          parts._forceMaxTok = Math.min(8192, maxTok * 2);
+          var res2 = await callAI(parts, parts._forceMaxTok);
+          if (res2.ok) {
+            var _parsed2 = await parseAIResponseFull(res2);
+            full = _parsed2.content; // aceita mesmo se cortar de novo — teto já é o máximo razoável
+          }
+        }
+      }
 
       var texts = [];
       var sections = full.split(/===\s*PAGINA\s*\d+\s*===/i);
@@ -3302,6 +4134,29 @@ async function geminiOCRBatch(pages, lang, clean, ocrOpts) {
       if (texts.every(function(t){ return t === ''; })) {
         texts = [full.trim()];
         for (var m = 1; m < n; m++) texts.push('');
+      }
+      // Limpeza determinística (sem adivinhação de espaço) — ver checkSpacingQuality.
+      if (clean) texts = texts.map(fixHyphensStr);
+
+      // Reprocessa o lote com o modelo MAIOR da cadeia se alguma página saiu
+      // com espaçamento suspeito — em vez de aceitar e tentar remendar depois.
+      // Só faz isso 1x (via _isQualityRetry) e só se ainda há modelo melhor
+      // disponível (modelIndex > 0), pra não disparar loop caro.
+      if (!_isQualityRetry && modelIndex > 0) {
+        var anySuspicious = texts.some(function(t) { return checkSpacingQuality(t).suspicious; });
+        if (anySuspicious) {
+          var savedIndex = modelIndex, savedModel = workingModel;
+          modelIndex = 0; workingModel = OR_MODELS[0];
+          addLog('Espaçamento suspeito — reprocessando com ' + workingModel, 'warn');
+          try {
+            var betterTexts = await geminiOCRBatch(pages, lang, clean, ocrOpts, true);
+            modelIndex = savedIndex; workingModel = savedModel; // volta ao modelo em uso
+            return betterTexts;
+          } catch (retryErr) {
+            modelIndex = savedIndex; workingModel = savedModel;
+            // se o reprocesso falhar, segue com o resultado original em vez de perder a página
+          }
+        }
       }
       return texts;
 
@@ -3335,26 +4190,31 @@ function stripMarkers(str) {
   return String(str || '').replace(/§[^§]*§/g, '').trim();
 }
 
-function fixOcrWordBoundaries(pages) {
-  var reL = '[' + LETTER_CHARS + ']';
-  var reWordSplit = new RegExp('(' + reL + '{2,})([A-Z][' + reL + ']{2,})', 'g');
-  var reCaseGap = /([a-záéíóúãõçà-üñ])([A-ZÁÉÍÓÚÃÕÜÑ])/g;
-  return pages.map(function(p) {
-    var lines = String(p.text || '').split('\n');
-    var fixed = lines.map(function(line) {
-      var t = line;
-      if (!t.trim()) return t;
-      if (/^\xA7|^\[FIGURA|^<table/i.test(t.trim())) return t;
-      t = t.replace(/-\s+(?=[a-záéíóúãõçà-üñ])/gi, '');
-      t = t.replace(reWordSplit, '$1 $2');
-      t = t.replace(reCaseGap, '$1 $2');
-      t = t.replace(/([.!?…])([^\s\d])/g, '$1 $2');
-      t = t.replace(/([,;:])([^\s\d])/g, '$1 $2');
-      t = t.replace(/\s+([,.;:!?…])/g, '$1');
-      return t;
-    });
-    return Object.assign({}, p, { text: fixed.join('\n') });
-  });
+// ── checkSpacingQuality ─────────────────────────────────────────────────────
+// SUBSTITUI fixOcrWordBoundaries (removida). Aquela função tentava ADIVINHAR
+// onde faltava/sobrava espaço no texto do OCR usando regex de maiúscula/
+// minúscula e tamanho de token — sem informação posicional real, cada regra
+// que resolvia um caso real criava falso positivo em outro (nome próprio,
+// sigla, palavra estrangeira). Em vez de corrigir às cegas, esta função só
+// SINALIZA página suspeita — quem chama (geminiOCRBatch) decide reprocessar
+// essa página específica com o modelo maior da cadeia, que é uma correção
+// de causa (melhor leitura) em vez de patch por cima de um resultado incerto.
+function checkSpacingQuality(text) {
+  var words = String(text || '').split(/\s+/).filter(Boolean);
+  if (words.length < 20) return { suspicious: false, reason: null };
+
+  var singleLetters = words.filter(function(w) { return /^[a-zà-ÿ]$/i.test(w); }).length;
+  var singleRatio = singleLetters / words.length;
+  if (singleRatio > 0.08) {
+    return { suspicious: true, reason: 'excesso de palavras de 1 letra (' + Math.round(singleRatio*100) + '%) — letras separadas' };
+  }
+
+  var veryLong = words.filter(function(w) { return w.replace(/[^\wà-ÿ]/gi,'').length > 22; }).length;
+  var longRatio = veryLong / words.length;
+  if (longRatio > 0.05) {
+    return { suspicious: true, reason: 'excesso de palavras muito longas (' + Math.round(longRatio*100) + '%) — palavras grudadas' };
+  }
+  return { suspicious: false, reason: null };
 }
 
 function isPrintedPageNumberLine(line) {
@@ -3399,7 +4259,9 @@ function buildRepeatedLineIndex(pages) {
 }
 
 function removeInlinePageNumbers(pages) {
-  var re = /\s*[\(\[]\s*\d{1,4}\s*[\)\]]\s*/g;
+  // \d{1,3} (não \d{1,4}): protege anos entre parênteses como (1930), (1971) — que
+  // são extremamente comuns em artigos — removendo apenas números de página curtos.
+  var re = /\s*[\(\[]\s*\d{1,3}\s*[\)\]]\s*/g;
   return pages.map(function(p) {
     var text = String(p.text || '').replace(re, ' ');
     var lines = text.split('\n');
@@ -3454,23 +4316,6 @@ function fixStickyWords(pages) {
       return a + ' ' + b;
     });
     return Object.assign({}, p, { text: fixed });
-  });
-}
-
-function repairSplitWordFragments(pages) {
-  var reFrag = new RegExp(
-    '\\b([' + LETTER_CHARS + ']{4,})\\s+([' + LETTER_CHARS + ']{1,3})\\b',
-    'g'
-  );
-  return pages.map(function(p) {
-    var text = p.text.replace(reFrag, function(full, a, b) {
-      var bLow = b.toLowerCase();
-      if (FRAGMENT_STOPWORDS.has(bLow)) return full;
-      if (/^[AEIOUÁÉÍÓÚÂÊÔÃÕ]$/i.test(b)) return full;
-      if (/^[a-z\u00E0-\u00FF]+$/.test(b) && /[a-z\u00E0-\u00FF]$/i.test(a)) return a + b;
-      return full;
-    });
-    return Object.assign({}, p, { text: text });
   });
 }
 
@@ -4501,6 +5346,7 @@ function pageToHTML(text, dataUrl, imgId, footnotes, pageNum, figures) {
       if (mt === 'KEYWORDS')       { html += '<p class="keywords"><strong>' + esc(mv) + '</strong></p>\n'; return; }
       if (mt === 'SECTION')        { html += '<h2 class="section-head">' + esc(mv) + '</h2>\n'; return; }
       if (mt === 'FOOTNOTE')       { html += '<p class="footnote">' + parseInlineMarkup(mv) + '</p>\n'; return; }
+      if (mt === 'QUOTE')          { html += '<blockquote class="citacao">' + parseInlineMarkup(mv) + '</blockquote>\n'; return; }
       if (mt === 'FIGSLOT')        {
         if (figures && figures.length) {
           for (var _fi = 0; _fi < figures.length; _fi++) {
@@ -4560,7 +5406,7 @@ function pageToHTML(text, dataUrl, imgId, footnotes, pageNum, figures) {
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
 
-    // ── Tabelas ───────────────────────────────────────────────────────────────
+    // ── Tabelas ───────────────────────────────────────────────────────���───────
     if (!inTable && /<table/i.test(line)) {
       flushPara();
       inTable = true;
@@ -4827,7 +5673,9 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
     '.abstract-label{font-weight:bold;font-size:1em;margin-top:1.4em;margin-bottom:.15em;text-indent:0}',
     '.abstract-body{margin:.15em 1.2em 1.2em;font-size:.95em;line-height:1.65;text-indent:0}',
     '.keywords{font-size:.88em;color:#444;margin:.4em 0 1.2em;text-indent:0}',
-    'h2.section-head{font-size:1.1em;font-weight:bold;margin-top:1.4em;margin-bottom:.3em;page-break-before:avoid;color:#1a1410}'
+    'h2.section-head{font-size:1.1em;font-weight:bold;margin-top:1.4em;margin-bottom:.3em;page-break-before:avoid;color:#1a1410}',
+    'blockquote.citacao{margin:1.2em 1em;padding:.7em 1.1em;background:#f6f4ef;border-left:4px solid #b9a980;border-radius:0 4px 4px 0;font-size:.9em;color:#44403a;line-height:1.6;text-indent:0;font-style:normal}',
+    'blockquote.citacao p{text-indent:0;margin:.4em 0}'
   ].join('\n');
 
   chapters.forEach(function (c) {
@@ -5062,8 +5910,8 @@ function copyPixKey() {
     var el = document.getElementById('pixCopied');
     var btn = document.getElementById('copyPixBtn');
     el.style.display = 'block';
-    btn.textContent = 'Copiado';
-    setTimeout(function(){ el.style.display='none'; btn.textContent='Copiar'; }, 2500);
+    btn.textContent = T.copiedShort || 'Copiado';
+    setTimeout(function(){ el.style.display='none'; btn.textContent = T.donateCopyPix || 'Copiar chave PIX'; }, 2500);
   }
 }
 
@@ -5108,7 +5956,14 @@ document.addEventListener('DOMContentLoaded', function() {
       var urlInput = document.getElementById('opdsUrl');
       if (urlInput && urlInput.value) {
         navigator.clipboard.writeText(urlInput.value);
-        alert('URL copiada!');
+        var label = copyBtn.querySelector('span');
+        var original = label ? label.textContent : '';
+        if (label) label.textContent = T.copiedShort || 'Copiado';
+        copyBtn.classList.add('copied');
+        setTimeout(function () {
+          if (label) label.textContent = original || T.sendCopy || 'Copiar';
+          copyBtn.classList.remove('copied');
+        }, 2000);
       }
     });
   }
@@ -5121,9 +5976,9 @@ document.addEventListener('DOMContentLoaded', function() {
     <button class="modal-close" type="button" onclick="document.getElementById('sendSettingsModal').style.display='none';return false;">✕</button>
 
     <div class="modal-header">
-      <div class="modal-tag">Enviar para e-reader</div>
-      <h2>Configurar envio</h2>
-      <p style="font-size:.85rem;color:var(--text-muted);margin-top:.5rem;line-height:1.6;">Configure o catálogo OPDS no KOReader e receba seus EPUBs direto no e-reader, sem cabo nem aplicativo extra.</p>
+      <div class="modal-tag" data-i18n="sendTag">Ler sem cabo</div>
+      <h2 data-i18n="sendTitle">Receba os EPUBs direto no seu e-reader</h2>
+      <p data-i18n="sendIntro">Configure uma vez o catálogo OPDS no KOReader e cada PDF que você converter aqui aparece sozinho na sua estante — sem cabo USB, sem mandar e-mail pra si mesmo.</p>
     </div>
 
     <div class="modal-body">
@@ -5132,25 +5987,25 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Epubly OPDS section -->
       <div style="margin-top:1.5rem;margin-bottom:1.5rem;">
         <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;">
-          <strong style="font-size:.88rem;">Epubly OPDS</strong>
-          <span style="font-size:.68rem;background:var(--accent);color:#fff;border:1.5px solid var(--border);border-radius:0;padding:.12rem .5rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-mono);">recomendado</span>
+          <strong style="font-size:.88rem;" data-i18n="sendOpdsName">Catálogo Epubly OPDS</strong>
+          <span style="font-size:.68rem;background:var(--accent);color:#fff;border:1.5px solid var(--border);border-radius:0;padding:.12rem .5rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-mono);" data-i18n="sendOpdsBadge">recomendado</span>
         </div>
-        <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem;line-height:1.6;">
-          Configure uma vez no KOReader: cada conversão entra sozinha na sua estante e fica disponível por 48h. Seu código pessoal garante que só você veja o que converteu.
+        <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6;" data-i18n="sendOpdsDesc">
+          Funciona como uma prateleira que se atualiza sozinha: cada conversão fica disponível por 24h. Um código pessoal garante que só você veja os seus livros no catálogo.
         </p>
-        <ol class="koreader-steps" style="margin-bottom:.75rem;">
-          <li>No KOReader: <strong>Busca de livros → Catálogos OPDS → +</strong></li>
-          <li>Nome: <code>Epubly</code></li>
-          <li>URL: <code>https://epubly-worker.pedro06bf.workers.dev/opds?code=<span id="userTokenDisplay" style="font-family:monospace;color:var(--text);"></span></code></li>
-          <li>Salve. Após cada conversão o livro aparece automaticamente no catálogo</li>
-        </ol>
+        <ul class="steps-list">
+          <li><span class="step-num">1</span><span data-i18n="sendStep1">No KOReader: <strong>Busca de livros → Catálogos OPDS → +</strong></span></li>
+          <li><span class="step-num">2</span><span data-i18n="sendStep2">Dê o nome <code>Epubly</code></span></li>
+          <li><span class="step-num">3</span><span data-i18n="sendStep3">Cole a URL pessoal abaixo em Endereço</span></li>
+          <li><span class="step-num">4</span><span data-i18n="sendStep4">Pronto — depois de cada conversão, o livro aparece sozinho na estante</span></li>
+        </ul>
         <div class="koreader-ip-row">
-          <label for="opdsUrl">Sua URL pessoal (copie para o KOReader)</label>
+          <label for="opdsUrl" data-i18n="sendUrlLabel">Sua URL pessoal (copie para o KOReader)</label>
           <div class="koreader-ip-input-wrap">
             <input id="opdsUrl" type="text" readonly style="background:var(--surface2);font-family:monospace;font-size:.75rem;" value="">
             <button type="button" id="copyOpdsUrlBtn">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              Copiar
+              <span data-i18n="sendCopy">Copiar</span>
             </button>
           </div>
         </div>
@@ -5158,7 +6013,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       <div class="modal-divider"></div>
 
-      <p style="font-size:.72rem;color:var(--text-dim);text-align:center;">O código é armazenado apenas no seu navegador e identifica seus livros. Nenhum dado pessoal é compartilhado.</p>
+      <p style="font-size:.72rem;color:var(--text-dim);text-align:center;" data-i18n="sendPrivacy">O código fica só no seu navegador — ele identifica seus livros no catálogo, não você.</p>
     </div>
   </div>
 </div>
@@ -5171,7 +6026,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="modal-header">
       <div class="modal-tag" data-i18n="donateTag">Apoie o projeto</div>
       <h2 data-i18n="donateTitle">Apoiar o Epubly</h2>
-      <p data-i18n="donateIntro">O Epubly é gratuito e de código aberto. Se ele foi útil para você, considere uma contribuição para manter o projeto vivo.</p>
+      <p data-i18n="donateIntro">Mantenho o Epubly sozinho, no tempo livre. Cada PDF convertido tem um custo real de processamento — uma doação de qualquer valor é o que mantém isso gratuito pra quem não pode pagar.</p>
     </div>
 
     <div class="modal-body">
@@ -5196,11 +6051,11 @@ document.addEventListener('DOMContentLoaded', function() {
           <p data-i18n="donateScan" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Escaneie com o app do seu banco</p>
         </div>
         <div id="pix-mobile" style="display:none;text-align:center;padding:.25rem 0 .5rem;">
-          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5;">Copie a chave PIX e cole no app do seu banco.</p>
-          <button type="button" id="copyPixBtn" onclick="copyPixKey()" class="btn-primary">
+          <p data-i18n="donateCopyDesc" style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5;">Copie a chave PIX e cole no app do seu banco.</p>
+          <button type="button" id="copyPixBtn" onclick="copyPixKey()" class="btn-primary" data-i18n="donateCopyPix">
             Copiar chave PIX
           </button>
-          <p id="pixCopied" style="font-size:.78rem;color:var(--green);display:none;margin-top:.85rem;">Chave copiada!</p>
+          <p id="pixCopied" style="font-size:.78rem;color:var(--green);display:none;margin-top:.85rem;" data-i18n="donateCopied">Chave copiada!</p>
         </div>
       </div>
 
@@ -5212,12 +6067,12 @@ document.addEventListener('DOMContentLoaded', function() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.034-.099-.077-.099-.077-.678-.772-3.517-3.36-3.76-3.702-.268-.368-.267-.826-.267-1.156l.005-1.207c0-.382.356-.38.356-.38h6.297c.356 0 .325.381.325.381l.002 1.188c-.016.479-.278.979-.538.974zm7.085.914c-.547.093-1.026.03-1.026.03V5.765c.978.112 1.814.767 1.967 1.857.12.677-.074 1.332-.353 1.306z"/></svg>
           Ko-fi
         </a>
-        <p style="font-size:.76rem;color:var(--text-muted);margin-top:1rem;line-height:1.5;">ko-fi.com/epubly &nbsp;·&nbsp; PayPal ou cartão internacional</p>
+        <p style="font-size:.76rem;color:var(--text-muted);margin-top:1rem;line-height:1.5;" data-i18n="donateKofiSub">ko-fi.com/epubly &nbsp;·&nbsp; PayPal ou cartão internacional</p>
       </div>
 
       <div class="modal-divider" style="margin-top:1.25rem;"></div>
       <p data-i18n="donateThanks" style="font-size:.75rem;color:var(--text-dim);margin-top:1rem;line-height:1.6;text-align:center;">
-        Qualquer valor ajuda a manter o serviço disponível.
+        R$ 5 já ajuda mais do que parece. Obrigado por passar por aqui.
       </p>
     </div>
   </div>
@@ -5231,7 +6086,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="modal-header">
       <div class="modal-tag" data-i18n="aboutTag">Sobre o projeto</div>
       <h2 data-i18n="aboutTitle">O que é o Epubly?</h2>
-      <p data-i18n="aboutIntro">Ferramenta gratuita e de código aberto para converter PDFs em EPUB.</p>
+      <p data-i18n="aboutIntro">Ferramenta gratuita e de código aberto que transforma PDFs, inclusive scans e fotocópias, em EPUBs prontos para a leitura acadêmica no e-reader.</p>
     </div>
 
     <div class="modal-body">
@@ -5240,30 +6095,34 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="about-steps">
 
         <div class="about-step">
+          <div class="about-step-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
           <div>
-            <div class="about-step-title" data-i18n="aboutS1t">A iniciativa</div>
-            <div class="about-step-text" data-i18n="aboutS1">Milhares de obras raras existem apenas como scans de baixa qualidade.</div>
+            <div class="about-step-title" data-i18n="aboutS1t">Para quem é</div>
+            <div class="about-step-text" data-i18n="aboutS1">Boa parte da bibliografia circula como PDFs escaneados de livros esgotados, capítulos digitalizados e artigos em coluna dupla, quase ilegíveis em telas pequenas. O Epubly recria esse material como um EPUB que se adapta à tela, para você ler e anotar com conforto no Kindle, Kobo ou tablet.</div>
           </div>
         </div>
 
         <div class="about-step">
+          <div class="about-step-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 2v10l7-4.5"/></svg></div>
           <div>
             <div class="about-step-title" data-i18n="aboutS2t">Como funciona</div>
-            <div class="about-step-text" data-i18n="aboutS2">O PDF é renderizado direto no navegador e as imagens vão para a IA.</div>
+            <div class="about-step-text" data-i18n="aboutS2">O PDF é renderizado página a página direto no seu navegador. As imagens passam por visão computacional, que lê o texto, reconhece tabelas e identifica figuras. Tudo acontece entre o seu computador e a API, e o Epubly não armazena nenhum arquivo.</div>
           </div>
         </div>
 
         <div class="about-step">
+          <div class="about-step-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></div>
           <div>
             <div class="about-step-title" data-i18n="aboutS3t">Código aberto</div>
-            <div class="about-step-text" data-i18n="aboutS3">Todo o código está disponível no <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>.</div>
+            <div class="about-step-text" data-i18n="aboutS3">Todo o código está disponível no <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>. Você pode hospedar sua própria instância, contribuir com melhorias ou auditar o que acontece com seus dados.</div>
           </div>
         </div>
 
         <div class="about-step">
+          <div class="about-step-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div>
             <div class="about-step-title" data-i18n="aboutS4t">Por que as doações são fundamentais</div>
-            <div class="about-step-text" data-i18n="aboutS4">Cada conversão tem um custo real de IA. Sem doações o projeto precisa fechar.</div>
+            <div class="about-step-text" data-i18n="aboutS4">Cada conversão tem um custo real de servidores e APIs. Queremos que o Epubly continue gratuito e acessível a estudantes e pesquisadores que não poderiam pagar por ele. As doações de quem pode contribuir são o que tornam isso possível.</div>
           </div>
         </div>
 
@@ -5284,6 +6143,51 @@ document.getElementById('sendSettingsBtn').addEventListener('click', function() 
   var tokenSpan = document.getElementById('userTokenDisplay');
   if (tokenSpan) tokenSpan.textContent = shortCode;
 });
+</script>
+
+<script>
+// ── Onboarding de 1a visita (aditivo — não toca nas funções existentes) ────
+// 1. Mostra o aviso de boas-vindas só se o navegador nunca viu esse aviso.
+// 2. Na 1a vez que um arquivo é carregado, expande "Opções de extração"
+//    sozinho (visitantes recorrentes já sabem que o botão existe e o painel
+//    continua colapsado por padrão pra eles).
+(function () {
+  var VISIT_KEY = 'epubly_seen_welcome';
+  var tip = document.getElementById('welcomeTip');
+  var closeBtn = document.getElementById('welcomeTipClose');
+
+  function hasSeenWelcome() {
+    try { return localStorage.getItem(VISIT_KEY) === '1'; } catch (e) { return false; }
+  }
+  function markSeenWelcome() {
+    try { localStorage.setItem(VISIT_KEY, '1'); } catch (e) {}
+  }
+
+  if (tip && !hasSeenWelcome()) {
+    tip.hidden = false;
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function () {
+      markSeenWelcome();
+      if (tip) tip.hidden = true;
+    });
+  }
+
+  // Expande as opções de extração automaticamente na 1a vez que o usuário
+  // carrega um arquivo (só nessa visita) — quem já usou o site antes não
+  // precisa que o painel se abra sozinho de novo.
+  var fileInput = document.getElementById('fileInput');
+  if (fileInput && !hasSeenWelcome()) {
+    fileInput.addEventListener('change', function () {
+      markSeenWelcome();
+      if (tip) tip.hidden = true;
+      setTimeout(function () {
+        var toggle = document.getElementById('optionsToggle');
+        if (toggle && toggle.getAttribute('aria-expanded') === 'false') toggle.click();
+      }, 300);
+    });
+  }
+})();
 </script>
 
 </body>
